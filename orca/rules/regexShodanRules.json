@@ -1,0 +1,1476 @@
+[
+  {
+    "title" : "Joomla",
+    "classification":"fingerprint",
+    "type": "regex",
+    "match": "<meta name=\"generator\" content=\"Joomla\\!\\s*(\\d[\\.\\d]*)",
+    "search": ["http","html"],
+    "output": "string"
+  },
+  {
+    "title" : "Wordpress",
+    "classification":"fingerprint",
+    "type": "regex",
+    "match": "<meta name=\"generator\" content=\"WordPress (\\d[\\.\\d]*)\" />",
+    "search": ["http","html"],
+    "output": "string"
+  },
+  {
+    "title" : "robots.txt - Indications of Wordpress install",
+    "classification":"fingerprint",
+    "type": "regex",
+    "match": "(/wp-admin/)|(/wp-includes/)|(/wp-content/)",
+    "search": ["http","robots"],
+    "output": "string"
+  },
+  {
+    "title" : "Email address website",
+    "classification":"fingerprint",
+    "type": "regex",
+    "match": "([\\w\\-][\\w\\-\\.]+@[\\w\\-][\\w\\-\\.]+[a-zA-Z]{1,4})",
+    "search": ["http","html"],
+    "output": "string"
+  },
+  {
+    "title" : "robots.txt - A file is directly referenced may be interesting",
+    "classification":"interesting",
+    "type": "regex",
+    "match": "^Disallow:(.*\\.[a-zA-Z0-9]{3,5})\\n",
+    "search": ["http","robots"],
+    "output": "string"
+  },
+
+  {
+    "title" : "Drupal",
+    "classification":"fingerprint",
+    "type": "regex",
+    "match": "<meta name=\"[g|G]enerator\" content=\"Drupal (\\d[.\\d]*)",
+    "search": ["http","html"],
+    "output": "string"
+  },
+  {
+    "title": "PHP banner",
+    "classification":"fingerprint",
+    "type": "regex",
+    "match": "X-Powered-By: PHP\/(\\d[\\.\\d]*)",
+    "search": ["data"],
+    "output": "string"
+  },
+  {
+    "title" : "iDRAC",
+    "classification":"fingerprint",
+    "type": "regex",
+    "match": "Integrated Dell Remote Access Controller (.*)$",
+    "search": ["http","title"],
+    "output": "string"
+  },
+  {
+    "title": "DokuWiki",
+    "classification":"fingerprint",
+    "type": "regex",
+    "match": "<meta name=\"generator\" content=\"DokuWiki Release ([^\"]*)\" />",
+    "search": ["http","html"],
+    "output": "string"
+  },
+  {
+    "title": "Dynamic Web",
+    "classification":"fingerprint",
+    "type": "regex",
+    "match": "\\(c\\) 1999-\\d\\d\\d\\d (Dynamicweb) Software A/S",
+    "search": ["http","html"],
+    "output": "string"
+  },
+  {
+    "title": "Dynamic Web",
+    "classification":"fingerprint",
+    "type": "regex",
+    "match": "<meta name=\"Generator\" content=\"Dynamicweb (\\d)\"",
+    "search": ["http","html"],
+    "output": "string"
+  },
+  {
+    "title": "Apache Tomcat",
+    "classification":"fingerprint",
+    "type": "regex",
+    "match": "<title>Apache Tomcat\/([0-9.]*)<\/title>",
+    "search": ["http","html"],
+    "output": "string"
+  },
+  {
+    "title": "Zabbix",
+    "classification":"fingerprint",
+    "type": "string",
+    "match": "by Zabbix SIA",
+    "search": ["http","html"],
+    "output": "string"
+  },
+  {
+    "title": "Movable Type",
+    "classification":"fingerprint",
+    "type": "regex",
+    "match": "<meta name=\"generator\" content=\"Movable Type (\\d[\\.\\d*]*)\" />",
+    "search": ["http","html"],
+    "output": "string"
+  },
+  {
+    "title": "Magento eCommerce software (HTML)",
+    "classification":"fingerprint",
+    "type": "string",
+    "match": "/mage",
+    "search": ["http","html"],
+    "output": ""
+  },
+  {
+    "title": "Magento eCommerce software (banner)",
+    "classification":"fingerprint",
+    "type": "string",
+    "match": "X-Magento-",
+    "search": ["data"],
+    "output": ""
+  },
+  {
+    "title": "Magento eCommerce (robots.txt)",
+    "classification":"fingerprint",
+    "type": "string",
+    "match": "Magento",
+    "search": ["http","robots"],
+    "output": ""
+  },
+  {
+    "title": "Redis Key Value Store",
+    "classification":"misconfiguration",
+    "type": "string",
+    "match": "Redis key-value store",
+    "search": ["product"],
+    "output": ""
+  },
+  {
+    "title": "Memcached",
+    "classification":"misconfiguration",
+    "type": "string",
+    "match": "Memcached",
+    "search": ["product"],
+    "output": ""
+  },
+  {
+    "title": "Teamviewer",
+    "classification":"misconfiguration",
+    "type": "string",
+    "match": "TeamViewer",
+    "search": ["product"],
+    "output": ""
+  },
+  {
+    "title": "ClamAV banner",
+    "classification":"fingerprint",
+    "type": "regex",
+    "match": "^ClamAV ([0-9.]*)",
+    "search": ["data"],
+    "output": "string"
+  },
+  {
+    "title": "Cassandra Database",
+    "classification":"misconfiguration",
+    "type": "string",
+    "match": "Cassandra",
+    "search": ["product"],
+    "output": ""
+  },
+  {
+    "title": "CouchDB",
+    "classification":"misconfiguration",
+    "type": "string",
+    "match": "CouchDB",
+    "search": ["product"],
+    "output": ""
+  },
+  {
+    "title": "DarkComet Trojan",
+    "classification":"malware",
+    "type": "string",
+    "match": "DarkComet trojan",
+    "search": ["product"],
+    "output": ""
+  },
+  {
+    "title": "njRAT",
+    "classification":"malware",
+    "type": "string",
+    "match": "njRAT",
+    "search": ["product"],
+    "output": ""
+  },
+  {
+    "title": "XtremeRAT trojan",
+    "classification":"malware",
+    "type": "string",
+    "match": "XtremeRAT trojan",
+    "search": ["product"],
+    "output": ""
+  },
+  {
+    "title": "NetBus Trojan",
+    "classification":"malware",
+    "type": "string",
+    "match": "NetBus trojan",
+    "search": ["product"],
+    "output": ""
+  },
+  {
+    "title": "Poison Ivy Trojan",
+    "classification":"malware",
+    "type": "string",
+    "match": "Poison Ivy trojan",
+    "search": ["product"],
+    "output": ""
+  },
+  {
+    "title": "BlackShades Trojan",
+    "classification":"malware",
+    "type": "string",
+    "match": "BlackShades",
+    "search": ["product"],
+    "output": ""
+  },
+  {
+    "title": "Werkzeug",
+    "classification":"misconfiguration",
+    "type": "string",
+    "match": "Server: Werkzeug",
+    "search": ["product"],
+    "output": ""
+  },
+  {
+    "title": "Stack Trace",
+    "classification":"interesting",
+    "type": "string",
+    "match": "<b>Stack Trace:</b>",
+    "search": ["http","html"],
+    "output": ""
+  },
+  {
+    "title": "Vbulletin",
+    "classification":"fingerprint",
+    "type": "regex",
+    "match": "<meta name=\"generator\" content=\"vBulletin (\\d[\\.\\d*]*)\" />",
+    "search": ["http","html"],
+    "output": "string"
+  },
+  {
+    "title": "Vbulletin",
+    "classification":"fingerprint",
+    "type": "regex",
+    "match": "%* vBulletin (\\d%[\\.\\d]*) CSS",
+    "search": ["http","html"],
+    "output": "string"
+  },
+  {
+    "title": "Snom VOIP phone",
+    "classification":"fingerprint",
+    "type": "string",
+    "match": "Server: snom embedded",
+    "search": ["data"],
+    "output": ""
+  },
+  {
+    "title": "iOmega NAS Device",
+    "classification":"fingerprint",
+    "type": "string",
+    "match": "Set-Cookie: iomega=",
+    "search": ["data"],
+    "output": ""
+  },
+  {
+    "title": "MayGion IP Camera",
+    "classification":"fingerprint",
+    "type": "string",
+    "match": "IPCamera_Logo",
+    "search": ["data"],
+    "output": ""
+  },
+  {
+    "title": "PHPMyAdmin (Setup Page)",
+    "classification":"misconfiguration",
+    "type": "string",
+    "match": "php</span><span class=\"orange\">MyAdmin</span>  setup</h1>",
+    "search": ["http","html"],
+    "output": ""
+  },
+  {
+    "title": "PHPMyAdmin",
+    "classification":"fingerprint",
+    "type": "string",
+    "match": "pma_username",
+    "search": ["http","html"],
+    "output": ""
+  },
+  {
+    "title": "Directory Listing",
+    "classification":"misconfiguration",
+    "type": "string",
+    "match": "Index of /",
+    "search": ["http","title"],
+    "output": ""
+  },
+  {
+    "title": "Directory Listing",
+    "classification":"misconfiguration",
+    "type": "string",
+    "match": "Directory listing for /",
+    "search": ["http","title"],
+    "output": ""
+  },
+  {
+    "title": "Telnet Enabled",
+    "classification":"misconfiguration",
+    "type": "string",
+    "match": "telnet",
+    "search": ["_shodan","module"],
+    "output": ""
+  },
+  {
+    "title": "Shodan CVE found",
+    "classification":"vuln",
+    "type": "regex",
+    "match": "'(CVE[0-9-]*)'",
+    "search": ["opts","vulns"],
+    "output": "string"
+  },
+  {
+    "title": "Anonymous Access Enabled",
+    "classification":"misconfiguration",
+    "type": "string",
+    "match": "\n230",
+    "search": ["data"],
+    "output": ""
+  },
+  {
+    "title": "ProFTPD 1.3.3a Server (Debian) - Metasploit to get root",
+    "classification":"vulnerable",
+    "type": "string",
+    "match": "220 ProFTPD 1.3.3a Server (Debian)",
+    "search": ["data"],
+    "output": ""
+  },
+  {
+    "title": "MAC Address found in banner (NetBIOS?)",
+    "classification":"interesting",
+    "type": "regex",
+    "match": "MAC: (([0-9a-f]{1,2}[\\.:-]){5}([0-9a-f]{1,2}))",
+    "search":["data"],
+    "output": "string"
+  },
+  {
+    "title": "Camera (VCS-VideoJet-Webserver) No auth",
+    "classification":"exposed",
+    "type": "string",
+    "match": "Server: VCS-VideoJet-Webserver",
+    "search": ["data"],
+    "output": ""
+  },
+  {
+    "title": "Solar Panels (SOLAR-LOG)",
+    "classification":"fingerprint",
+    "type": "string",
+    "match": "Server: IPC@CHIP",
+    "search": ["data"],
+    "output": ""
+  },
+  {
+    "title": "HP LaserJet P3005 Printer",
+    "classification":"fingerprint",
+    "type": "string",
+    "match": "SERVER: HP-ChaiSOE",
+    "search": ["data"],
+    "output": ""
+  },
+  {
+    "title": "MySQL Listening",
+    "classification":"exposed",
+    "type": "string",
+    "match": "mysql",
+    "search": ["_shodan","module"],
+    "output": ""
+  },
+  {
+    "title": "Mongo Listening",
+    "classification":"exposed",
+    "type": "string",
+    "match": "mongodb",
+    "search": ["_shodan","module"],
+    "output": ""
+  },
+  {
+    "title": "ElasticSearch Listening",
+    "classification":"exposed",
+    "type": "string",
+    "match": ": \"You Know, for Search\"",
+    "search": ["data"],
+    "output": ""
+  },
+  {
+    "title": "PostgreSQL",
+    "classification":"exposed",
+    "type": "string",
+    "match": "PostgreSQL\n",
+    "search": ["data"],
+    "output": ""
+  },
+  {
+    "title": "Has screenshot",
+    "classification":"interesting",
+    "type": "string",
+    "match": "image",
+    "search": ["opts","screenshot","mime"],
+    "output": ""
+  },
+  {
+    "title": "Riak Web Console",
+    "classification":"exposed",
+    "type": "string",
+    "match": ">riak_kv_wm_bucket_type<",
+    "search": ["http","html"],
+    "output": ""
+  },
+  {
+    "title": "Yoast SEO",
+    "classification":"fingerprint",
+    "type": "regex",
+    "match": "This site is optimized with the Yoast SEO plugin v(\\d[\\.\\d]*)",
+    "search": ["http","html"],
+    "output": "string"
+  },
+  {
+    "title": "Google analytics account number",
+    "classification":"fingerprint",
+    "type": "regex",
+    "match": "\\'create\\', \\'(UA-[0-9]{5,9})-",
+    "search": ["http","html"],
+    "output": "string"
+  },
+  {
+    "title": "Link to social media profile",
+    "classification":"interesting",
+    "type": "regex",
+    "match": "href=\"https?:\/\/((www.)?(facebook.com|linkedin.com|twitter.com){1}\/[\/a-z0-9]{3,20})",
+    "search": ["http","html"],
+    "output": "string"
+  },
+  {
+    "title": "Riak Server",
+    "classification":"exposed",
+    "type": "string",
+    "match": "Basho Riak\n",
+    "search": ["data"],
+    "output": ""
+  },
+  {
+    "title": "Expired Certificate",
+    "classification":"misconfiguration",
+    "type": "bool",
+    "match": true,
+    "search": ["ssl","cert","expired"],
+    "output": ""
+  },
+  {
+    "title": "Polycom Command Shell",
+    "classification":"exposed",
+    "type": "string",
+    "match": "Polycom Command Shell",
+    "search": ["data"],
+    "output": ""
+  },
+  {
+    "title": "HP Laserjet",
+    "classification":"fingerprint",
+    "type": "string",
+    "match": "Server: Virata-EmWeb/R6_2_1",
+    "search": ["data"],
+    "output": ""
+  },
+  {
+    "title": "Polycom Control Panel",
+    "classification":"fingerprint",
+    "type": "string",
+    "match": "- Polycom",
+    "search": ["http","title"],
+    "output": ""
+  },
+
+  {
+    "title": "Polycom Configuration Utility",
+    "classification":"exposed",
+    "type": "string",
+    "match": "Polycom - Configuration Utility",
+    "search": ["http","title"],
+    "output": ""
+  },
+  {
+    "title": "MiiNePort web console",
+    "classification":"fingerprint",
+    "type": "string",
+    "match": "Moxa",
+    "search": ["http","server"],
+    "output": ""
+  },
+  {
+    "title": "Z-World Rabbit Embedded device",
+    "classification":"fingerprint",
+    "type": "string",
+    "match": "Z-World Rabbit",
+    "search": ["http","server"],
+    "output": ""
+  },
+  {
+    "title": "ANPR Camera",
+    "classification":"fingerprint",
+    "type": "string",
+    "match": "\nP372",
+    "search": ["data"],
+    "output": ""
+  },
+  {
+    "title": "cPanel",
+    "classification":"fingerprint",
+    "type": "string",
+    "match": "cPanel httpd",
+    "search": ["product"],
+    "output": ""
+  },
+  {
+    "title": "Linksys WRT54g Router",
+    "classification":"fingerprint",
+    "type": "string",
+    "match": "realm=\"WRT54G",
+    "search": ["data"],
+    "output": ""
+  },
+  {
+    "title": "Nessus",
+    "classification":"fingerprint",
+    "type": "string",
+    "match": "id=\"NessusClient",
+    "search": ["http","html"],
+    "output": ""
+  },
+  {
+    "title": "Sophos Mobile Control",
+    "classification":"fingerprint",
+    "type": "string",
+    "match": "Sophos Mobile Control",
+    "search": ["http","title"],
+    "output": ""
+  },
+  {
+    "title": "Nessus",
+    "classification":"fingerprint",
+    "type": "string",
+    "match": "id=\"NessusClient",
+    "search": ["http","html"],
+    "output": ""
+  },
+  {
+    "title": "JIRA Dashboard",
+    "classification":"fingerprint",
+    "type": "regex",
+    "match": "<meta name=\"application-name\" content=\"JIRA\" data-name=\"jira\" data-version=\"([0-9.]*)\">",
+    "search": ["http","html"],
+    "output": "string"
+  },
+  {
+    "title": "Jenkins Dashboard",
+    "classification":"fingerprint",
+    "type": "string",
+    "match": "Dashboard [Jenkins]",
+    "search": ["http","title"],
+    "output": "string"
+  },
+  {
+    "title": "F5 Load Balancer",
+    "classification":"fingerprint",
+    "type": "string",
+    "match": "Server: BigIP",
+    "search": ["data"],
+    "output": ""
+  },
+  {
+    "title": "SonicWALL Administrator",
+    "classification":"fingerprint",
+    "type": "string",
+    "match": "<meta name=\"SonicWALL Administrator",
+    "search": ["http","html"],
+    "output": "string"
+  },
+  {
+    "title": "Dell SonicWALL Administrator",
+    "classification":"fingerprint",
+    "type": "string",
+    "match": "<meta name=\"Dell SonicWALL Administrator",
+    "search": ["http","html"],
+    "output": "string"
+  },
+  {
+    "title": "Juniper SSL VPN",
+    "classification":"fingerprint",
+    "type": "string",
+    "match": "path=/dana-na/;",
+    "search": ["data"],
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - Cisco Applicance Demo Certificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "Cisco Appliance Demo Certificate",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - 3CX Phone System",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "3CX Phone System",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - ASA Temporary Self Signed Certificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "ASA Temporary Self Signed Certificate",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - Acme Packe",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "Acme Packet",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - Any Viprinet VPN Tunnel",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "Any Viprinet VPN Tunnel",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - \"Default Certificate for OpenStage/Desk Phone IP - please update\"",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "Default Certificate for OpenStage/Desk Phone IP - please update",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - Dummy Certificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "Dummy Certificate",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - Fireware",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "Fireware",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - IOS-Self-Signed-Certificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "IOS-Self-Signed-Certificate",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - KX-NS1000 (Panasonic Business Communications Server)",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "KX-NS1000.",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - MobileIron (MDM)",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "MobileIron",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - Netgear VPN Firewall",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "Netgear VPN Firewall",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - Nu_Centauri VPN Certificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "Nu_Centauri VPN Certificate",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - Parallels Plesk Panel",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "Parallels Panel",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - SCCM 2012 R2 SSL Certificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "SCCM 2012 R2 SSL Certificate",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN -",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "SophosUTM",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - Splunk",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "SplunkServerDefaultCert",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - QNAP TS Series NAS",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "TS Series NAS",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - Ubiquiti UniFi WAP",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "UniFi",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - Polycom Video Border Proxy Self-Signed Certificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "VBP Self-Signed Certificate",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - VMware default certificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "VMware default certificate",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - VPN Certificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "VPN Certificate",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - DreyTek Vigor Router",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "Vigor Router",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - Dell iDRAC6 default certificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "iDRAC6 default certificate",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - FireEye Appliance",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "FireEye",
+    "output": "string"
+  },
+    {
+    "title": "Certificate CN - 3CX Phone System",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "3CX Phone System",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - Viprinet VPN Tunnel",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "Any Viprinet VPN Tunnel",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - Avigilon Surveillance Gateway",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "Avigilon Gateway",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - Dell V520 Series default certificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "Dell V520 Series",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - eBox file sharing Server",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "eBox Server",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - FileMaker server default certificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "FileMaker Root Authority",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - FileMaker server default certificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "FMI Default Certificate",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - Foldr default certificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "Foldr Default Certificate",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - gatekeeper VPN Certificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "gatekeeper VPN Certificate",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - General Root CA",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "General Root CA",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - General Router",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "General Router",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - Dell iDRAC7 default certificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "iDRAC7 default certificate",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - ISIS VPN Certificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "ISIS VPN Certificate",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - ITM-Rainwall-Cluster VPN Certificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "ITM-Rainwall-Cluster VPN Certificate",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - LaCie SA default certificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "LaCie SA",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - NeoRouter RA/VPN certificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "NeoRouter Inc.",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - Netgear VPN Firewall default certificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "Netgear VPN Firewall",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - Preset Certificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "Preset Certificate",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - QNAP NAS",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "QNAP NAS",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - Ruckus Wireless Inc. default certificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "Ruckus Wireless Inc.",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - Seagate NAS certificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "Seagate Technology LLC",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - Snom Phone 2 default certificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "Snom Phone 2",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - snom VoIP Phone default certificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "snom VoIP Phone",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - Teefax VPN certificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "Teefax VPN Certificate",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - Thomson TG585 Router",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "Thomson TG585",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - QNAP TS Series NAS",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "TS Series NAS",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - Ubiquiti certificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "UBNT-",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - Ubiquiti management interface default certificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "UBNT Router UI",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - WatchGuard Firewall",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "WatchGuard Certificate Authority",
+    "output": "string"
+  },
+  {
+    "title": "Certificate CN - Windows Media Player Network Sharing Service",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","CN"],
+    "match": "Windows Media Player Network Sharing Service",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - Axentraserver Default Certificate (NAS)",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "Axentraserver Default Certificate",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - Barracuda Networks",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "Barracuda Networks",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - Broadcom",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "Broadcom",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - Brocade Communications System",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "Brocade Communications System",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - Cisco Systems",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "Cisco Systems",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - Cisco-Linksys",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "Cisco-Linksys",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - CradlePoint",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "CradlePoint",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - Cyberoam (Sophos security appliance)",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "Cyberoam",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - Fortinet",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "Fortinet",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - HIKVISION (Video surveillance)",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "HIKVISION",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - Honeywell International",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "Honeywell International",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - LANCOM Systems",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "LANCOM Systems",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - Linksys",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "Linksys",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - Mitel Networks Corporation",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "Mitel Networks Corporation",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - NETGEAR",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "NETGEAR",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - OpenVPN Technologies",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "OpenVPN Technologies",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - PBXware",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "PBXware",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - PRTG Demo Certificate (Network Monitoring)",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "PRTG Demo Certificate",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - PacketVideo",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "PacketVideo",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - Panasonic System Networks Co.,Ltd.",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "Panasonic System Networks Co.,Ltd.",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - Parallels",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "Parallels",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - Polycom (Video Conferencing)",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "Polycom",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - QNAP (NAS)",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "QNAP",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - Radvision (Video Conferencing)",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "Radvision",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - Sierra Wireless",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "Sierra Wireless",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - SofaWare",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "SofaWare",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - SonicWALL",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "SonicWALL",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - Synology (NAS)",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "Synology",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - Technicolor",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "Technicolor",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - TemporaryDefaultCertificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "TemporaryDefaultCertificate",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - \"This is a Test and Demo Certificate only\"",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "This is a Test and Demo Certificate only",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - Tridium (Embedded systems)",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "Tridium",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - Ubiquiti Networks",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "Ubiquiti Networks",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - VMware",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "VMware",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - Viprinet Europe GmbH",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "Viprinet Europe GmbH",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - WatchGuard",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "WatchGuard",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - pfSense webConfigurator Self-Signed Certificate",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "pfSense webConfigurator Self-Signed Certificate",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - Dell",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "Dell Inc",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - FileMaker",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "FileMaker",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - QNAP",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": ".myqnapcloud.com",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - LaCie",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "LaCie SA",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - Lexmark",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "Lexmark",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - COPA-DATA Group",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "copa-data.internal",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - Minnow IT LTD",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "Minnow IT LTD",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - NeoRouter",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "neorouter.com",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - Netgear Inc",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "Netgear Inc",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - QNAP Systems",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "QNAP Systems",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - Ruckus Wireless",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "Ruckus Wireless",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - Seagate Technology LLC",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "Seagate Technology LLC",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - Snom Technology AG",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "Snom Technology AG",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - Thomson",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "THOMSON",
+    "output": "string"
+  },
+  {
+    "title": "Certificate O - WatchGuard",
+    "classification":"fingerprint",
+    "type": "string",
+    "search": ["ssl","cert","issuer","O"],
+    "match": "WatchGuard",
+    "output": "string"
+  }
+]

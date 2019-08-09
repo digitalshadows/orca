@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  orca_db:
+    image: jonasprogrammer/postgres-ip4r:10
+    volumes:
+      - db-data:/opt/orca/db
+    networks:
+      orca_net:
+        ipv4_address: 172.21.0.100
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: orcapass
+      POSTGRES_USER: orca
+      POSTGRES_DB: orca_projects
+
+volumes:
+  db-data:
+
+networks:
+  orca_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.21.0.0/16
+
+

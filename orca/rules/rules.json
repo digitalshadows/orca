@@ -1,0 +1,27 @@
+{
+    "rules": [{
+	"name": "IPSec Virtual Private Network",
+	"tag": "IPSec",
+	"keys": {"ports": [500, 4500]}
+    },{
+	"name": "Telnet",
+	"tag": "Telnet",
+	"keys" : {"ports": [23]}
+    },{
+	"name": "SSH",
+	"tag": "SSH",
+	"keys" : {"ports": [22]}
+    },{
+	"name": "Samba/SMB/CIFS",
+	"tag": "CIFS",
+	"keys" : {"ports": [445]}
+    },{
+	"name": "Microsoft PPTP",
+	"tag": "PPTP",
+	"keys" : {"ports": [1723]}
+    },{
+	"name": "Remote Desktop Protocol",
+	"tag": "RDP",
+	"keys" : {"ports": [3389]}
+    }]
+}

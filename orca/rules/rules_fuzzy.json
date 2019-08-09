@@ -1,0 +1,7 @@
+{
+    "rules": [{
+	"name": "F5 Load Balancer",
+	"tag": "F5",
+	"keys" : {"banner_shodan": ["BigIP"]}
+    }]
+}
