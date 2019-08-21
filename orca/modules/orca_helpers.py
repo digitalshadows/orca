@@ -51,11 +51,27 @@ def handle_json_output(json_input, raw):
         colorful_json = highlight(formatted_json, lexers.JsonLexer(), formatters.TerminalFormatter())
         print(colorful_json)
 
+def ip_check_routable(item):
+    ip_addr = IPAddress(item)
+
+    # This prevents netaddr allowing shortened ip addresses
+    if not str(ip_addr) == item:
+        raise AddrFormatError("IP Malformed")
+
+    # Check for reserved IP addresses
+    if any([ip_addr.is_multicast(), ip_addr.is_private(), ip_addr.is_loopback(), ip_addr.is_link_local(), ip_addr.is_reserved()]):
+        raise AddrFormatError("IP is reserved")
+    # Check to see if IP is IPv4
+    elif ip_addr.version is not 4:
+        raise AddrFormatError("IP is not IPv4")
+
+    return True
 
 def is_ipaddr(ip):
     tmp_ip = None
     try:
         tmp_ip = IPAddress(ip)
+        ip_check_routable(ip)
     except:
         return False
 
@@ -198,9 +214,12 @@ def validate_filename(ctx, param, value):
 
 
 def validate_ip(ctx, param, value):
-    if value and (not validators.ipv4(value)):
-        click.secho("[!] Invalid IP provided: {}".format(value), bg='red')
-        ctx.abort()
+
+    if value:
+        if not (validators.ipv4(value) and is_ipaddr(value)):
+            click.secho("[!] Invalid IP provided: {}".format(value), bg='red')
+            ctx.abort()
+
     return value
 
 

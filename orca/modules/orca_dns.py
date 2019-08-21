@@ -121,9 +121,10 @@ def get_domains_from_dnsdumpster(domain):
         if "502 Bad Gateway" in response.text:
             print("Bad Gateway - DNS Dumpster down")
             exit(2)
+
         splitoutput = response.text.split("\n")
         for result in splitoutput:
-            if result:
+            if result and len(result.split(",")) == 2:
                 output.append(result.split(",", 1))
     except requests.exceptions.HTTPError as e:
         logging.warning("Error connecting to DNS dumpster: {}".format(e))
@@ -131,4 +132,5 @@ def get_domains_from_dnsdumpster(domain):
     except requests.exceptions.ConnectionError as e:
         logging.warning("Error connecting to DNS dumpster: {}".format(e))
         return []
+
     return output

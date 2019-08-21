@@ -9,6 +9,7 @@ from blessed import Terminal
 from datetime import date
 from datetime import datetime
 from netaddr import IPAddress
+from netaddr.core import AddrFormatError
 from retrying import retry
 from tqdm import tqdm
 
@@ -36,8 +37,13 @@ def get_shodan_data(shodan_api, ipaddr):
     try:
         json_result = shodan_api.host(ipaddr)
     except shodan.exception.APIError as e:
+
         if 'No information available for that IP' in str(e):
-            pass
+            return
+
+        if 'Invalid IP' in str(e):
+            return
+
         else:
             raise 
 
@@ -59,8 +65,15 @@ def shodan_lookup_ipaddr(title, ipaddr, asset_id, host_id, refresh=False):
     asndb = pyasn.pyasn(orca_dir)
 
     na_ipaddr = IPAddress(ipaddr)
+
+
+    # Check IP is routable
+    try:
+        ip_valid = orca_helpers.ip_check_routable(ipaddr)
+    except AddrFormatError as e:
+        ip_valid = False
     
-    if not na_ipaddr.is_private():
+    if ip_valid:
         if (not orca_dbconn.is_ipaddr_in_db(ipaddr)) or refresh:
             shodan_response = get_shodan_data(shodan_api, ipaddr)
             if shodan_response is not None:
@@ -157,7 +170,7 @@ def shodan_lookup_ipaddr(title, ipaddr, asset_id, host_id, refresh=False):
         else:
             tqdm.write("{:16s}| IP addr in DB".format(ipaddr))
     else:
-        tqdm.write("{:16s}| Skipping private IP".format(ipaddr))
+        tqdm.write("{:16s}| Skipping non routable IP".format(ipaddr))
 
 
 @retry(wait_fixed=2000, stop_max_attempt_number=5, retry_on_exception=retry_if_shodan_error)
@@ -172,8 +185,7 @@ def shodan_lookup_netrange(title, netrange, asset_id, host_id, refresh=False):
     
     shodan_netrange = "net:" + netrange
     counter = shodanapi.count(shodan_netrange)['total']
-    print("counter {}".format(counter))
-          
+
     curr = shodanapi.search_cursor(shodan_netrange, minify=False)
     
     with tqdm(total=counter) as pbar:
