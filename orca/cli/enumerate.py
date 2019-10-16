@@ -9,6 +9,7 @@ from tqdm import tqdm
 from modules import orca_helpers, orca_shodan, orca_dns
 from modules.orca_dbconn import OrcaDbConnector
 from modules.orca_crtsh import get_domains_from_crtsh
+
 from settings import ORCA_PROJECTS, ORCA_CVESEARCH_IP, ORCA_CVESEARCH_PORT
 
 from . import CONTEXT_SETTINGS
@@ -63,7 +64,6 @@ def enum_dns_db(project, all_):
 @click.argument('project', type=click.Choice(ORCA_PROJECTS))
 def enum_exploits_db(project):
     orca_dbconn = OrcaDbConnector(project)
-
     results = orca_dbconn.get_all_vuln_entries()
 
     with tqdm(total=len(results)) as pbar:
@@ -78,7 +78,7 @@ def enum_exploits_db(project):
                             tqdm.write("[+] Adding exploit: {} for {} to the database".format(ref, result['cve']))
                             orca_dbconn.update_vuln_table_exploit(result['host_id'], result['cve'], ref)
             pbar.update(1)
-
+    
 @enum.command('subdomains_crtsh',
               help='Get subdomains from crt.sh. Will run over all assets in the asset table unless --domain is specified.')
 @click.option('--domain', '-d', callback=orca_helpers.validate_domain, help='Domain for scanning')
