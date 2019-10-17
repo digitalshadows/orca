@@ -354,7 +354,7 @@ class OrcaDbConnector:
         self.init_vuln_table()
             
     def init_vuln_table(self):        
-        table = "CREATE TABLE IF NOT EXISTS {} (vuln_id serial NOT NULL PRIMARY KEY, host_id serial, ipaddr ip4, shodan_hostname text[], module text, cpe text[], cve text, cvss float, verified boolean, summary text, exploit boolean, exploit_ref text[], UNIQUE(ipaddr, cve))".format(self.vuln_table_name)
+        table = "CREATE TABLE IF NOT EXISTS {} (vuln_id serial NOT NULL PRIMARY KEY, host_id serial, ipaddr ipaddress, shodan_hostname text[], module text, cpe text[], cve text, cvss float, verified boolean, summary text, exploit boolean, exploit_ref text[], UNIQUE(ipaddr, cve))".format(self.vuln_table_name)
 
         try:
             with self.get_cursor() as cur:
@@ -373,7 +373,7 @@ class OrcaDbConnector:
         with self.get_cursor() as cur:
             cur.execute(ip4r)
         
-        table = "CREATE TABLE IF NOT EXISTS {} (shodan_id serial NOT NULL PRIMARY KEY, ipaddr ip4 UNIQUE, asset_id serial, host_id serial, added timestamp, last_updated timestamp, cli text[], ports integer[], banner_shodan text[], cpe json, hostname text[], netname text, cidr inet, asn text, country text, tags text[])".format(self.shodan_table_name)
+        table = "CREATE TABLE IF NOT EXISTS {} (shodan_id serial NOT NULL PRIMARY KEY, ipaddr ipaddress UNIQUE, asset_id serial, host_id serial, added timestamp, last_updated timestamp, cli text[], ports integer[], banner_shodan text[], cpe json, hostname text[], netname text, cidr inet, asn text, country text, tags text[])".format(self.shodan_table_name)
         try:
             with self.get_cursor() as cur:
                 cur.execute(table)
@@ -389,7 +389,7 @@ class OrcaDbConnector:
         with self.get_cursor() as cur:
             cur.execute(ip4r)
 
-        query = "CREATE TABLE IF NOT EXISTS {} (host_id serial primary key not null, ipaddr ip4 UNIQUE, hostname text[], asset_id serial, shodan_hostname text[], shodan boolean, host_data_origin text)".format(self.host_table_name)
+        query = "CREATE TABLE IF NOT EXISTS {} (host_id serial primary key not null, ipaddr ipaddress UNIQUE, hostname text[], asset_id serial, shodan_hostname text[], shodan boolean, host_data_origin text)".format(self.host_table_name)
         try:
             with self.get_cursor() as cur:
                 cur.execute(query)

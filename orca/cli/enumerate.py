@@ -189,19 +189,19 @@ def enum_subdomains_amass(project, domain, verbose):
                 asset_id = result['asset_id']
                 domain = result['asset_data_value']
 
-        output = get_subdomains_from_amass_subprocess(domain)
-        asset_id = orca_dbconn.store_asset(domain, asset_type='domain', source='amass')
-        for line in output['subdomains']['results']:
-            for ipaddr in line[1]: # Get unique
-                try:
-                    orca_helpers.validate_ip(None, None, ipaddr)
-                except ValueError as e:
-                    if verbose:
-                        click.secho("[?] {}: {} - [{}]".format(e, line[0], ipaddr), fg='yellow')
-                    pass
-                else:
-                    click.echo(click.style("[+]", fg='green') + " Adding subdomain: {} - [{}]".format(line[0], ipaddr))
-                    orca_dbconn.add_host_to_host_table(ipaddr, [line[0]], asset_id, 'amass')
+                output = get_subdomains_from_amass_subprocess(domain)
+                asset_id = orca_dbconn.store_asset(domain, asset_type='domain', source='amass')
+                for line in output['subdomains']['results']:
+                    for ipaddr in line[1]: # Get unique
+                        try:
+                            orca_helpers.validate_ip(None, None, ipaddr)
+                        except ValueError as e:
+                            if verbose:
+                                click.secho("[?] {}: {} - [{}]".format(e, line[0], ipaddr), fg='yellow')
+                            pass
+                        else:
+                            click.echo(click.style("[+]", fg='green') + " Adding subdomain: {} - [{}]".format(line[0], ipaddr))
+                            orca_dbconn.add_host_to_host_table(ipaddr, [line[0]], asset_id, 'amass')
 
 @enum.command('services_shodan', short_help='Enumerate service information from SHODAN.')
 @click.option('--enumerate', '-e', 'enum', help='Which datasource would you like to use, the hosts or cidr table?',
