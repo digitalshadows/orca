@@ -217,8 +217,12 @@ def validate_ip(ctx, param, value):
 
     if value:
         if not (validators.ipv4(value) and is_ipaddr(value)):
-            click.secho("[!] Invalid IP provided: {}".format(value), bg='red')
-            ctx.abort()
+
+            if ctx:
+                click.secho("[!] Invalid IPv4 provided: {}".format(value), bg='red')
+                ctx.abort()
+            else:
+                raise ValueError('Invalid IPv4 provided')
 
     return value
 
@@ -242,8 +246,12 @@ def validate_domain(ctx, param, value):
     r = re.compile("^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$")
 
     if value and (not bool(r.match(value))):
-        click.secho("[!] Invalid domain name provided: {}".format(value), bg='red')
-        ctx.abort()
+
+        if ctx:
+            click.secho("[!] Invalid domain name provided: {}".format(value), bg='red')
+            ctx.abort()
+        else:
+            raise ValueError('Invalid domain provided')
 
     return value
 

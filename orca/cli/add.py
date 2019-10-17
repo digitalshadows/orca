@@ -71,22 +71,35 @@ def import_asset_domaintools(project, if_):
 @click.option('--input_file', '-f', 'input_file', help='File containing OWASP Amass JSON output',prompt=True, type=click.File('r'))
 @click.option('--verbose', '-v', 'verbose', help='Enable verbose output', is_flag=True)
 @click.argument('project', callback=orca_helpers.validate_projectname)
-def add_subdomains_amass(project, if_, verbose):
-    orca_dbconn = OrcaDbConnector(project)
-    
-    if input_file:
-        output = get_subdomains_from_amass(input_file)
-        asset_id = orca_dbconn.store_asset(output['subdomains']['domain'], asset_type='domain', source='amass')
-        try:
+def add_subdomains_amass(project, input_file, verbose):
+
+    try:
+        orca_dbconn = OrcaDbConnector(project)
+        if input_file:
+            output = get_subdomains_from_amass(input_file)
+
+            orca_helpers.validate_domain(None, None, output['subdomains']['domain'])
+            asset_id = orca_dbconn.store_asset(output['subdomains']['domain'], asset_type='domain', source='amass')
+
             for line in output['subdomains']['results']:
-                for ipaddr in line[1]:
-                    click.echo(click.style("[+]", fg='green') + " Adding subdomain: {} - [{}]".format(line[0], ipaddr))
-                    orca_dbconn.add_host_to_host_table(ipaddr, [line[0]], asset_id, 'amass')
-        except Exception as e:
-            if verbose:
-                click.secho("[!] Error {}".format(e), fg='red')
-            pass
-            
+                for ipaddr in line[1]: # Get unique
+
+                    try:
+                        orca_helpers.validate_ip(None, None, ipaddr)
+                    except ValueError as e:
+                        if verbose:
+                            click.secho("[?] {}: {} - [{}]".format(e, line[0], ipaddr), fg='yellow')
+                        pass
+                    else:
+                        click.echo(click.style("[+]", fg='green') + " Adding subdomain: {} - [{}]".format(line[0], ipaddr))
+                        orca_dbconn.add_host_to_host_table(ipaddr, [line[0]], asset_id, 'amass')
+
+    except Exception as e:
+        click.secho("[!] Error: {}".format(e), fg='red')
+        ctx = click.get_current_context()
+        ctx.abort()
+
+
 @add.command('from_file', short_help='Import asset data from a line delimited file')
 @click.option('--input_file', '-f', 'input_file', help='File path', type=click.File('r'), prompt=True)
 @click.option('--type', '-t', 'type_', help='What does the file contain',
