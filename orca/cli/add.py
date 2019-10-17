@@ -62,7 +62,7 @@ def import_asset_domaintools(project, if_):
 
     for line in if_:
         if not 'Domain' in line:
-            domain_name = line.split(',')[0]
+            domain_name = line.split(',')[0][1:-1]
             add_asset(orca_dbconn, domain_name, 'domain', source='domaintools')
 
 
