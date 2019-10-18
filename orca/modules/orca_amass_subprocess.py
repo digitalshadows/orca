@@ -7,7 +7,6 @@ from click import style, echo, secho
 def get_subdomains_from_amass_subprocess(domain):
     results = []
     amass_file = "{}-amass.json".format(domain.split('.')[:1][0])
-    print("About to run Amass for {}".format(domain))
     
     subprocess.run(["amass","enum","--json", amass_file,"-d","{}".format(domain)])
     

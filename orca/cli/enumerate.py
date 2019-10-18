@@ -192,8 +192,10 @@ def enum_subdomains_amass(project, domain, verbose):
                 output = get_subdomains_from_amass_subprocess(domain)
                 asset_id = orca_dbconn.store_asset(domain, asset_type='domain', source='amass')
                 for line in output['subdomains']['results']:
+                    print(line)
                     for ipaddr in line[1]: # Get unique
                         try:
+                            print(ipaddr)
                             orca_helpers.validate_ip(None, None, ipaddr)
                         except ValueError as e:
                             if verbose:
