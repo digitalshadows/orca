@@ -128,14 +128,14 @@ def shodan_lookup_ipaddr(title, ipaddr, asset_id, host_id, refresh=False):
                 #     orca_helpers.cpe_to_string(cpes)), blessed_t.cyan(org), blessed_t.cyan(asn), blessed_t.cyan(country), blessed_t.cyan(cidr)))
                 #
 
-                tqdm.write("\nIP Address - {ipaddr} [{host_value}]"
+                tqdm.write("[+] IP Address - {ipaddr} [{host_value}]"
                             "\n{ports_text:>12}: {ports_value}"
                             "\n{modules_text:>12}: {modules_value}"
                             "\n{asn_text:>12}: {asn_value}"
                             "\n{netblock_text:>12}: {netblock_value}"
                             "\n{org_text:>12}: {org_value}"
                             "\n{country_text:>12}: {country_value}"
-                            "\n{cpe_text:>12}: {cpe_value}".format(
+                            "\n{cpe_text:>12}: {cpe_value}\n".format(
                     ipaddr=blessed_t.yellow(ipaddr),
                     host_text="Hostname", host_value=orca_helpers.list_to_string(hostname),
                     ports_text="Ports", ports_value=",".join("{0}".format(n) for n in ports),
@@ -168,9 +168,9 @@ def shodan_lookup_ipaddr(title, ipaddr, asset_id, host_id, refresh=False):
                 #tqdm.write("{:16s} not found in SHODAN".format(ipaddr))
                 pass
         else:
-            tqdm.write("{:16s}| IP addr in DB".format(ipaddr))
+            tqdm.write("[!] {:16s}| IP addr in DB".format(ipaddr))
     else:
-        tqdm.write("{:16s}| Skipping non routable IP".format(ipaddr))
+        tqdm.write("[!] {:16s}| Skipping non routable IP".format(ipaddr))
 
 
 @retry(wait_fixed=2000, stop_max_attempt_number=5, retry_on_exception=retry_if_shodan_error)
@@ -190,11 +190,12 @@ def shodan_lookup_netrange(title, netrange, asset_id, host_id, refresh=False):
     
     with tqdm(total=counter) as pbar:
         for json_result in curr:
-            tqdm.write("Handling IP address: {}".format(blessed_t.yellow(json_result['ip_str'])))
             ipaddr = json_result['ip_str']
 
             if not orca_dbconn.is_ipaddr_in_db(ipaddr) or refresh:
                 shodan_lookup_ipaddr(title, ipaddr, asset_id, 0)
+            else:
+                tqdm.write("[!] {:16s}| IP addr in DB".format(json_result['ip_str']))
             pbar.update(1)
             
     orca_dbconn.update_ad_table(netrange)

@@ -6,6 +6,7 @@ from modules.orca_amass import get_subdomains_from_amass
 
 from . import CONTEXT_SETTINGS
 
+
 @click.group(context_settings=CONTEXT_SETTINGS, short_help='Add/Import asset data which you would like to enumerate.')
 def add():
     pass

@@ -203,9 +203,10 @@ def enum_subdomains_amass(project, domain, verbose):
                             click.echo(click.style("[+]", fg='green') + " Adding subdomain: {} - [{}]".format(line[0], ipaddr))
                             orca_dbconn.add_host_to_host_table(ipaddr, [line[0]], asset_id, 'amass')
 
+
 @enum.command('services_shodan', short_help='Enumerate service information from SHODAN.')
 @click.option('--enumerate', '-e', 'enum', help='Which datasource would you like to use, the hosts or cidr table?',
-              default='all', show_default='all', type=click.Choice(['all', 'hosts', 'cidr']))
+              default='all', show_default='all', type=click.Choice(['all', 'hosts', 'cidr', 'ip']))
 @click.option('--refresh_results', '-r', help='Force a refresh of previously seen hosts', is_flag=True)
 @click.argument('project', type=click.Choice(ORCA_PROJECTS))
 def lookup_hosts_shodan(project, enum, refresh_results):
@@ -215,7 +216,13 @@ def lookup_hosts_shodan(project, enum, refresh_results):
     orca_helpers.get_shodan_key()
 
     if enum in ['hosts', 'all']:
+
         host_table = orca_dbconn.get_all_host_table_entries()
+
+        if len(host_table) > 0:
+            click.secho("\n[!] Running host enumeration over {} hostnames".format(len(host_table)), fg='green')
+        else:
+            click.secho("\n[>] No hosts ranges to enumerate - skipping!", fg='yellow')
 
         with tqdm(total=len(host_table)) as pbar:
             for ipaddr in host_table:
@@ -224,10 +231,31 @@ def lookup_hosts_shodan(project, enum, refresh_results):
                 orca_shodan.shodan_lookup_ipaddr(project, ipaddr['ipaddr'], ipaddr['asset_id'], ipaddr['host_id'],
                                                  refresh=refresh_results)
                 pbar.update(1)
+            pbar.close()
 
     if enum in ['cidr', 'all']:
+
         results = orca_dbconn.get_all_ad_entries_typed('cidr')
+
+        if len(results) > 0:
+            click.secho("\n[!] Running CIDR enumeration over {} ranges".format(len(results)), fg='green')
+        else:
+            click.secho("\n[>] No CIDR ranges to enumerate - skipping!", fg='yellow')
+
 
         for result in results:
             click.echo(click.style("[?]", fg='yellow') + " Enumerating CIDR {}".format(result['asset_data_value']))
             orca_shodan.shodan_lookup_netrange(project, result['asset_data_value'], result['asset_id'], 0)
+
+    if enum in ['ip', 'all']:
+
+        results = orca_dbconn.get_all_ad_entries_typed('ipaddr')
+
+        if len(results) > 0:
+            click.secho("\n[!] Running IP enumeration over {} addresses".format(len(results)), fg='green')
+        else:
+            click.secho("\n[>] No IP addresses to enumerate - skipping!", fg='yellow')
+
+        for result in tqdm(results):
+            orca_shodan.shodan_lookup_ipaddr(project, result['asset_data_value'], result['asset_id'], 0,
+                                                 refresh=refresh_results)
