@@ -207,7 +207,7 @@ def enum_subdomains_amass(project, domain, verbose):
 
 
 @enum.command('services_shodan', short_help='Enumerate service information from SHODAN.')
-@click.option('--enumerate', '-e', 'enum', help='Which datasource would you like to use, the hosts or cidr table?',
+@click.option('--enumerate', '-e', 'enum', help='Which datasource would you like to use, the hosts, ip or cidr table?',
               default='all', show_default='all', type=click.Choice(['all', 'hosts', 'cidr', 'ip']))
 @click.option('--refresh_results', '-r', help='Force a refresh of previously seen hosts', is_flag=True)
 @click.argument('project', type=click.Choice(ORCA_PROJECTS))
