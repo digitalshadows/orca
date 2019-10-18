@@ -20,6 +20,6 @@ def get_subdomains_from_amass_subprocess(domain):
                 results.append([json_line['name'],list(set(ip_addrs))])
     json_data = {'subdomains':{'results':results, 'domain': domain}}
 
-    #subprocess.run(["rm", "-f", amass_file])
+    subprocess.run(["rm", "-f", amass_file])
     
     return json_data
