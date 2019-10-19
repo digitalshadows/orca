@@ -427,6 +427,8 @@ class OrcaDbConnector:
             
     def store_asset(self, asset, source, asset_type):
         res = ''
+        # Tried initially to "DO NOTHING RETURNING" but that would result in no result being returned. Had to use the approach here:
+        # https://stackoverflow.com/questions/34708509/how-to-use-returning-with-on-conflict-in-postgresql
         query = "INSERT INTO {} (asset_id, asset_data_value, asset_data_type, asset_data_origin, infra_check, verified, insert_time) VALUES (DEFAULT, %(asset)s, %(asset_type)s, %(source)s, false, false, %(insert_time)s) ON CONFLICT(asset_data_value) DO UPDATE SET asset_data_origin=%(source)s RETURNING asset_id".format(self.ad_table_name)
         params = {"asset":asset, "asset_type":asset_type, "source":source, "insert_time":datetime.datetime.now()}
         with self.get_cursor() as cur:
@@ -440,6 +442,7 @@ class OrcaDbConnector:
 
     def add_host_to_host_table(self, ipaddr, hostname, asset_id, host_data_origin):
         statement = "INSERT INTO {} (host_id, ipaddr, hostname, asset_id, shodan, host_data_origin) VALUES (DEFAULT, %(ipaddr)s, %(hostname)s, %(asset_id)s, false, %(host_data_origin)s) ON CONFLICT (ipaddr) DO UPDATE SET shodan = True".format(self.host_table_name)
+
         params = {"ipaddr":ipaddr,"hostname":hostname,"asset_id":asset_id, "host_data_origin":host_data_origin}
 
         try:
