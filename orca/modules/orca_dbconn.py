@@ -427,11 +427,12 @@ class OrcaDbConnector:
             
     def store_asset(self, asset, source, asset_type):
         res = ''
-        query = "INSERT INTO {} (asset_id, asset_data_value, asset_data_type, asset_data_origin, infra_check, verified, insert_time) VALUES (DEFAULT, %(asset)s, %(asset_type)s, %(source)s, false, false, %(insert_time)s) ON CONFLICT DO NOTHING RETURNING asset_id".format(self.ad_table_name)
+        query = "INSERT INTO {} (asset_id, asset_data_value, asset_data_type, asset_data_origin, infra_check, verified, insert_time) VALUES (DEFAULT, %(asset)s, %(asset_type)s, %(source)s, false, false, %(insert_time)s) ON CONFLICT(asset_data_value) DO UPDATE SET asset_data_origin=%(source)s RETURNING asset_id".format(self.ad_table_name)
         params = {"asset":asset, "asset_type":asset_type, "source":source, "insert_time":datetime.datetime.now()}
         with self.get_cursor() as cur:
             cur.execute(query, params)
             res = cur.fetchone()
+
         if res is not None:
             return res[0]
         else:
