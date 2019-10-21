@@ -56,14 +56,14 @@ def ip_check_routable(item):
 
     # This prevents netaddr allowing shortened ip addresses
     if not str(ip_addr) == item:
-        raise AddrFormatError("IP Malformed")
+        raise AddrFormatError("IP Malformed {}".format(item))
 
     # Check for reserved IP addresses
     if any([ip_addr.is_multicast(), ip_addr.is_private(), ip_addr.is_loopback(), ip_addr.is_link_local(), ip_addr.is_reserved()]):
-        raise AddrFormatError("IP is reserved")
+        raise AddrFormatError("IP is reserved {}".format(item))
     # Check to see if IP is IPv4
-    elif ip_addr.version is not 4:
-        raise AddrFormatError("IP is not IPv4")
+    # elif ip_addr.version is not 4:
+    #     raise AddrFormatError("IP is not IPv4")
 
     return True
 
@@ -71,15 +71,16 @@ def is_ipaddr(ip):
     tmp_ip = None
     try:
         tmp_ip = IPAddress(ip)
-        ip_check_routable(ip)
+        if tmp_ip:
+            if tmp_ip.is_unicast():
+                ip_check_routable(ip)
+                return True
+            else:
+                return False
+
     except:
         return False
 
-    if tmp_ip:
-        if tmp_ip.is_unicast():
-            return True
-        else:
-            return False
     else:
         return False
 
@@ -214,6 +215,20 @@ def validate_filename(ctx, param, value):
 
 
 def validate_ip(ctx, param, value):
+
+    if value:
+        if is_ipaddr(value):
+            return value
+        else:
+            if ctx:
+                click.secho("[!] Invalid IP address provided: {}".format(value), bg='red')
+                ctx.abort()
+            else:
+                raise ValueError('Invalid IP address provided: {}'.format(value))
+
+    return value
+
+def validate_ipv4(ctx, param, value):
 
     if value:
         if not (validators.ipv4(value) and is_ipaddr(value)):
