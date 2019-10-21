@@ -51,7 +51,7 @@ def get_shodan_data(shodan_api, ipaddr):
         return json_result
 
 
-def shodan_lookup_ipaddr(title, ipaddr, asset_id, host_id, refresh=False):
+def shodan_lookup_ipaddr(title, ipaddr, asset_id, host_id=0, refresh=False):  # host_id is 0 when there is no parent
     shodan_api = shodan.Shodan(orca_helpers.get_shodan_key())
 
     orca_dbconn = OrcaDbConnector()
@@ -64,8 +64,7 @@ def shodan_lookup_ipaddr(title, ipaddr, asset_id, host_id, refresh=False):
 
     asndb = pyasn.pyasn(orca_dir)
 
-    na_ipaddr = IPAddress(ipaddr)
-
+    IPAddress(ipaddr)
 
     # Check IP is routable
     try:
@@ -123,11 +122,6 @@ def shodan_lookup_ipaddr(title, ipaddr, asset_id, host_id, refresh=False):
             
                 cidr = lookup_cidr_prefix(asndb, ipaddr)
 
-                # tqdm.write("ipaddr {} hostname {} timestamp {} last_update {} module {} ports {} cpe {} netname {} asn {} country {} cidr {}".format(blessed_t.yellow(ipaddr), blessed_t.cyan(
-                #     orca_helpers.list_to_string(hostname)), blessed_t.cyan(datetime.now().isoformat(' ', 'seconds')), blessed_t.cyan(last_update), blessed_t.cyan(','.join(modules)), blessed_t.cyan(",".join("{0}".format(n) for n in ports)), blessed_t.cyan(
-                #     orca_helpers.cpe_to_string(cpes)), blessed_t.cyan(org), blessed_t.cyan(asn), blessed_t.cyan(country), blessed_t.cyan(cidr)))
-                #
-
                 tqdm.write("[+] IP Address - {ipaddr} [{host_value}]"
                             "\n{ports_text:>12}: {ports_value}"
                             "\n{modules_text:>12}: {modules_value}"
@@ -165,7 +159,7 @@ def shodan_lookup_ipaddr(title, ipaddr, asset_id, host_id, refresh=False):
 
                                 orca_dbconn.add_vuln_to_db(orca_dbconn.get_hostid_from_ipaddr(ipaddr), ipaddr, hostname, shodan_response['data'][i]['_shodan']['module'], shodan_response['data'][i]['cpe'], cve, data['cvss'], data['verified'], data['summary'])
             else:
-                #tqdm.write("{:16s} not found in SHODAN".format(ipaddr))
+                # tqdm.write("{:16s} not found in SHODAN".format(ipaddr))
                 pass
         else:
             tqdm.write("[!] {:16s}| IP addr in DB".format(ipaddr))
@@ -174,7 +168,7 @@ def shodan_lookup_ipaddr(title, ipaddr, asset_id, host_id, refresh=False):
 
 
 @retry(wait_fixed=2000, stop_max_attempt_number=5, retry_on_exception=retry_if_shodan_error)
-def shodan_lookup_netrange(title, netrange, asset_id, host_id, refresh=False):
+def shodan_lookup_netrange(title, netrange, asset_id, refresh=False):
     orca_dbconn = OrcaDbConnector()
     
     orca_dbconn.init_ad_table_name(title)
@@ -193,7 +187,7 @@ def shodan_lookup_netrange(title, netrange, asset_id, host_id, refresh=False):
             ipaddr = json_result['ip_str']
 
             if not orca_dbconn.is_ipaddr_in_db(ipaddr) or refresh:
-                shodan_lookup_ipaddr(title, ipaddr, asset_id, 0)
+                shodan_lookup_ipaddr(title, ipaddr, asset_id)
             else:
                 tqdm.write("[!] {:16s}| IP addr in DB".format(json_result['ip_str']))
             pbar.update(1)
