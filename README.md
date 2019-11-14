@@ -154,8 +154,6 @@ cd /opt/cve/
 ./sbin/db_updater.py -c
 ./sbin/db_mgmt_ref.py
 ```
-then update the database, *note that this can take a long time (>6 hours) but the pre-packaged database is out-of-date*
-`sudo docker exec -it [CONTAINER] cvedb -u`
 The API is not ready to use until you see:
 ```
 ==================== Starting web app ====================
