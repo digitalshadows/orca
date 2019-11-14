@@ -34,13 +34,13 @@ def any_resolve(domain_name, any_resolver, max_tries, record_type):
             # tqdm.write(blessed_t.red("[!] ") + "No Answer from DNS servers received")
             return None
         except dns.resolver.NoNameservers:
-            tqdm.write(blessed_t.red("[!] ") + "No nameservers found for domain {}".format(domain_name))
+            tqdm.write(blessed_t.red("[!] {:<32} - No NS found".format(domain_name)))
             return None
         except dns.resolver.NXDOMAIN:
-            tqdm.write(blessed_t.red("[!] ") + "NXDOMAIN error for domain {} and record type {}".format(domain_name, record_type))
+            tqdm.write(blessed_t.red("[!] {dns_key:<32} - {dns_type:>5} - NXDOMAIN".format(dns_key=domain_name, dns_type=record_type)))
             return None
         except dns.exception.Timeout:
-            tqdm.write(blessed_t.red("[!] ") + "DNS Timeout")
+            tqdm.write(blessed_t.red("[!] {:<32} - DNS Timeout".format(domain_name)))
             return None
 
 
