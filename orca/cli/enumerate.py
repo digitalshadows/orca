@@ -55,9 +55,12 @@ def enum_dns_db(project, all_, no_):
     orca_dbconn = OrcaDbConnector(project)
 
     if all_:
+        click.secho("\n[!] Running DNS Enumeration - Asset table", fg='green')
         orca_dns.enumerate_domain_ad(orca_dbconn, no_)
+        click.secho("\n[!] Running DNS Enumeration - Hosts table", fg='green')
         orca_dns.enumerate_domain_hosts(orca_dbconn, no_)
     else:
+        click.secho("\n[!] Running DNS Enumeration - Asset table", fg='green')
         orca_dns.enumerate_domain_ad(orca_dbconn, no_)  # all domains in asset data
 
 

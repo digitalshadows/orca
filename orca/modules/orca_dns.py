@@ -28,26 +28,30 @@ def any_resolve(domain_name, any_resolver, max_tries, record_type):
                     result = str(ans)
                 result_list.append(result)
             if result is not None:
-                tqdm.write("[+] {dns_key:<32} - {dns_type:>5} - {dns_value}".format(dns_type=blessed_t.cyan(record_type), dns_key=blessed_t.green(domain_name), dns_value=blessed_t.yellow(result)))
+                tqdm.write(blessed_t.green("[+] ") + "{dns_key:<32} - {dns_type:>5} - {dns_value}".format(dns_type=blessed_t.magenta(record_type), dns_key=blessed_t.cyan(domain_name), dns_value=blessed_t.yellow(result)))
             return result_list
         except dns.resolver.NoAnswer:
-            #print "No Answer from DNS servers received" 
+            # tqdm.write(blessed_t.red("[!] ") + "No Answer from DNS servers received")
             return None
         except dns.resolver.NoNameservers:
-            tqdm.write("No nameservers found for domain {}".format(domain_name))
+            tqdm.write(blessed_t.red("[!] ") + "No nameservers found for domain {}".format(domain_name))
             return None
         except dns.resolver.NXDOMAIN:
-            tqdm.write("NXDOMAIN error for domain {} and record type {}".format(domain_name, record_type))
+            tqdm.write(blessed_t.red("[!] ") + "NXDOMAIN error for domain {} and record type {}".format(domain_name, record_type))
             return None
         except dns.exception.Timeout:
+            tqdm.write(blessed_t.red("[!] ") + "DNS Timeout")
             return None
 
 
 def enumerate_domain_ad(orca_dbconn, no_):
     domains = orca_dbconn.get_all_ad_entries_domains()
 
-    for domain in domains:
-        enumerate_domain(orca_dbconn, domain['asset_data_value'], no_)
+    with tqdm(total=len(domains)) as pbar:
+        for domain in domains:
+            pbar.set_description(desc="Enumerating [{:16s}]".format(domain['asset_data_value']))
+            enumerate_domain(orca_dbconn, domain['asset_data_value'], no_)
+        pbar.update(1)
 
 
 def enumerate_domain_hosts(orca_dbconn, no_):
