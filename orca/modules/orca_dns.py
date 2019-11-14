@@ -43,28 +43,29 @@ def any_resolve(domain_name, any_resolver, max_tries, record_type):
             return None
 
 
-def enumerate_domain_ad(orca_dbconn):
+def enumerate_domain_ad(orca_dbconn, no_):
     domains = orca_dbconn.get_all_ad_entries_domains()
 
     for domain in domains:
-        enumerate_domain(orca_dbconn, domain['asset_data_value'])
+        enumerate_domain(orca_dbconn, domain['asset_data_value'], no_)
 
 
-def enumerate_domain_hosts(orca_dbconn):
+def enumerate_domain_hosts(orca_dbconn, no_):
     domains = orca_dbconn.get_all_hosts()
     
     with tqdm(total=len(domains)) as pbar:
         for domain in domains:
             for hostname in domain['hostname']:
                 pbar.set_description(desc="Enumerating [{:16s}]".format(hostname))
-                enumerate_domain(orca_dbconn, hostname)
+                enumerate_domain(orca_dbconn, hostname, no_)
             pbar.update(1)
 
 
-def enumerate_domain(orca_dbconn, domain_name):
+def enumerate_domain(orca_dbconn, domain_name, no_):
     max_tries = 3
     any_resolver = dns.resolver.Resolver()
-    any_resolver.nameservers = ['1.1.1.1','8.8.8.8','9.9.9.9','8.8.4.4']
+    if not no_:
+        any_resolver.nameservers = ['1.1.1.1','8.8.8.8','9.9.9.9','8.8.4.4']
     record_types = ["MX", "TXT", "SOA", "NS", "AAAA", "A", "CNAME"]
     temp_result = {"Domain": domain_name, "results": {"MX": [], "TXT": [], "SOA": [], "NS": [], "AAAA": [], "A": [], "CNAME": []}}
     try:

@@ -49,15 +49,16 @@ def enum_all(ctx, project):
 
 @enum.command('dns_db', short_help='Enumerate DNS records from the hosts in the db.')
 @click.option('--all', '-a', 'all_', help='Enumerate both asset data and hosts table', is_flag=True)
+@click.option('--no-multiple-resolvers', '-n', 'no_', help='Disables the usage of multiple resolvers and uses the system resolver instead', is_flag=True)
 @click.argument('project', type=click.Choice(ORCA_PROJECTS))
-def enum_dns_db(project, all_):
+def enum_dns_db(project, all_, no_):
     orca_dbconn = OrcaDbConnector(project)
 
     if all_:
-        orca_dns.enumerate_domain_ad(orca_dbconn)
-        orca_dns.enumerate_domain_hosts(orca_dbconn)
+        orca_dns.enumerate_domain_ad(orca_dbconn, no_)
+        orca_dns.enumerate_domain_hosts(orca_dbconn, no_)
     else:
-        orca_dns.enumerate_domain_ad(orca_dbconn)  # all domains in asset data
+        orca_dns.enumerate_domain_ad(orca_dbconn, no_)  # all domains in asset data
 
 
 @enum.command('exploits_db', short_help='Get available exploits for CVEs in the DB.')
