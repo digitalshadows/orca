@@ -139,8 +139,21 @@ sudo -u postgres psql -c "CREATE EXTENSION ip4r" orcadata
 ```
 
 ### CVE-Search
-Install CVE Search via docker:
-`sudo docker run -d -p 5000:5000 --name cve ttimasdf/cve-search:latest`
+Install CVE Search via docker from our repository (https://github.com/digitalshadows/docker-cve-search) by cloning it to your local filesystem:
+```
+git clone https://github.com/digitalshadows/docker-cve-search.git
+```
+and then you can build and run the container in the following way:
+```
+sudo docker build -t cve-orca .
+sudo docker run -d -p 5000:5000 --name cve cve-orca
+sudo docker exec -it cve /bin/bash
+cd /opt/cve/
+./sbin/db_mgmt_json.py -p
+./sbin/db_mgmt_cpe_dictionary.py
+./sbin/db_updater.py -c
+./sbin/db_mgmt_ref.py
+```
 then update the database, *note that this can take a long time (>6 hours) but the pre-packaged database is out-of-date*
 `sudo docker exec -it [CONTAINER] cvedb -u`
 The API is not ready to use until you see:
