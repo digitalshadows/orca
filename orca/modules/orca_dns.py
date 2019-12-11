@@ -64,6 +64,17 @@ def enumerate_domain_hosts(orca_dbconn, no_):
                 enumerate_domain(orca_dbconn, hostname, no_)
             pbar.update(1)
 
+def enumerate_domain_dmarc(orca_dbconn, no_):
+    domains = orca_dbconn.get_all_ad_entries_domains()
+    with tqdm(total=len(domains)) as pbar:
+        for domain in domains:
+            pbar.set_description(desc="Enumerating [{:16s}]".format(domain['asset_data_value']))
+            dmarc_domain = "_dmarc.{}".format(domain['asset_data_value'])
+            res = enumerate_dmarc(orca_dbconn, dmarc_domain, no_)
+            if res:
+                orca_dbconn.add_dns_entry(dmarc_domain, [], [], [], [], [], [], [res])
+
+        pbar.update(1)
 
 def enumerate_domain(orca_dbconn, domain_name, no_):
     max_tries = 3
@@ -77,10 +88,11 @@ def enumerate_domain(orca_dbconn, domain_name, no_):
             tmp = any_resolve(domain_name, any_resolver, max_tries, record_type)
             if tmp is not None:
                 temp_result['results'][record_type] = tmp
+        
     except Exception as e: 
         print("DNS servers no longer responding, exiting... {}".format(e))
         sys.exit(2)
-
+    print(temp_result)
     if any([result for _, result in temp_result['results'].items()]):
         orca_dbconn.add_dns_entry(
             domain_name,
@@ -94,16 +106,19 @@ def enumerate_domain(orca_dbconn, domain_name, no_):
         )
 
 
-def dmarc_resolve(dbconn, domain_name):
+def enumerate_dmarc(dbconn, domain_name, no_):
     max_tries = 3
     orca_resolver = dns.resolver.Resolver()
-    orca_resolver.nameservers = ['1.1.1.1', '8.8.8.8', '9.9.9.9']
+    if not no_:
+        orca_resolver.nameservers = ['1.1.1.1','8.8.8.8','9.9.9.9','8.8.4.4']
 
-    dmarc_results = {}
+    dmarc_results = ""
     
     try:
-        print("Doing DMARC lookup for %s" % domain_name)
-        dmarc_results.update(any_resolve(dbconn, domain_name, orca_resolver, max_tries, "TXT"))
+        print("Doing DMARC lookup for {}".format(domain_name))
+        res = any_resolve(domain_name, orca_resolver, max_tries, "TXT")
+        if res:
+            dmarc_results = res[0]
     except dns.exception.Timeout:
         print("DNS servers no longer responding, exiting...")
     except dns.resolver.NoAnswer:

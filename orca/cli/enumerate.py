@@ -9,6 +9,7 @@ from tqdm import tqdm
 from modules import orca_helpers, orca_shodan, orca_dns
 from modules.orca_dbconn import OrcaDbConnector
 from modules.orca_crtsh import get_domains_from_crtsh
+from modules.orca_bgp import enumerate_bgp_domain
 from modules.orca_amass_subprocess import get_subdomains_from_amass_subprocess
 
 from settings import ORCA_PROJECTS, ORCA_CVESEARCH_IP, ORCA_CVESEARCH_PORT
@@ -49,9 +50,10 @@ def enum_all(ctx, project):
 
 @enum.command('dns_db', short_help='Enumerate DNS records from the hosts in the db.')
 @click.option('--all', '-a', 'all_', help='Enumerate both asset data and hosts table', is_flag=True)
+@click.option('--dmarc', '-d', 'dmarc_', help='Enumerate all domains in asset data for DMARC entries', is_flag=True)
 @click.option('--no-multiple-resolvers', '-n', 'no_', help='Disables the usage of multiple resolvers and uses the system resolver instead', is_flag=True)
 @click.argument('project', type=click.Choice(ORCA_PROJECTS))
-def enum_dns_db(project, all_, no_):
+def enum_dns_db(project, all_, no_, dmarc_):
     orca_dbconn = OrcaDbConnector(project)
 
     if all_:
@@ -59,6 +61,9 @@ def enum_dns_db(project, all_, no_):
         orca_dns.enumerate_domain_ad(orca_dbconn, no_)
         click.secho("\n[!] Running DNS Enumeration - Hosts table", fg='green')
         orca_dns.enumerate_domain_hosts(orca_dbconn, no_)
+    elif dmarc_:
+        click.secho("\n[!] Running DNS Enumeration for DMARC - Asset table", fg='green')
+        orca_dns.enumerate_domain_dmarc(orca_dbconn, no_)
     else:
         click.secho("\n[!] Running DNS Enumeration - Asset table", fg='green')
         orca_dns.enumerate_domain_ad(orca_dbconn, no_)  # all domains in asset data
@@ -82,6 +87,13 @@ def enum_exploits_db(project):
                             orca_dbconn.update_vuln_table_exploit(result['host_id'], result['cve'], ref)
             pbar.update(1)
 
+@enum.command('cidrs_bgpview', short_help='Get CIDR prefixes from BGPView project')
+@click.option('--domain', '-d', callback=orca_helpers.validate_domain, help='Domain for scanning')
+@click.argument('project', type=click.Choice(ORCA_PROJECTS))
+def enum_exploits_db(project, domain):
+    orca_dbconn = OrcaDbConnector(project)
+
+    enumerate_bgp_domain(orca_dbconn, domain)
 
 @enum.command('subdomains_crtsh',
               help='Get subdomains from crt.sh. ' +
