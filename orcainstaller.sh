@@ -22,7 +22,7 @@ echo 'Installing Orca...'
 git clone https://github.com/digitalshadows/orca.git
 sudo docker-compose up -d
 sudo -H pip3 install .
-orca-recon init $SHODAN_API_KEY
+yes | orca-recon init $SHODAN_API_KEY
 echo "$(_ORCA_RECON_COMPLETE=source orca-recon)" > ~/.orca/orca-recon-complete.sh
 echo '. ~/.orca/orca-recon-complete.sh' >> ~/.bashrc
 cd ..
