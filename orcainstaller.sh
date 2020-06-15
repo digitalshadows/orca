@@ -2,7 +2,7 @@
 
 ###run as sudo
 ###only tested on a fresh Ubuntu 18.04 LTS install
-###add shodan api key as an environmental variable prior to running
+###add shodan api key as an environmental variable prior to running, or just replace it in the script
 
 echo 'Updating packages...'
 sudo apt update -y
