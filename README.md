@@ -69,6 +69,20 @@ For zsh users:
 
 ```echo '. ~/.orca/orca-recon-complete.sh' >> ~/.zshrc```
 
+### Installation - Script
+
+For ease of use and effeciency, there is now an install script for Orca that will automate the above steps. This script has been tested and works on Ubuntu 18.04 LTS and Kali 2020.2. Prior to running the script, provide your Shodan API key to the variable. 
+
+Make the script executable:
+
+``` chmod +x orcainstaller.sh```
+
+Then run the script with sudo:
+
+``` sudo ./orcainstaller.sh```
+
+This might take a few minutes, but when it's finished, Orca will be installed and bash autocompletion will be enabled.
+
 ### Additional Services (Exploit Lookups)
 
 If you wish to use the Orca to search for services which have publicly available exploits. You will also need to install CVE-Search. For instructions on how to do this. See the 'CVE-Search' section below.
