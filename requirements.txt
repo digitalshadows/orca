@@ -1,4 +1,4 @@
-Pygments==2.7.4
+Pygments==2.15.0
 netaddr==0.7.19
 Click==7.0
 tqdm==4.32.2
