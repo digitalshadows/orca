@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os
+
 from setuptools import setup, find_packages
 
 
@@ -26,7 +27,7 @@ setup(
     license='Copyright (c) 2019 Digital Shadows Ltd',
     copyright='Copyright (c) 2019 Digital Shadows Ltd',
     packages=find_packages(),
-    entry_points = {
+    entry_points={
         'console_scripts': ['orca-recon=orca.orcarecon:cli'],
     },
     url="https://www.digitalshadows.com/",

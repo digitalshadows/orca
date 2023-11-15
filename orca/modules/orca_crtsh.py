@@ -1,12 +1,11 @@
-import requests
 import click
-
+import requests
 from bs4 import BeautifulSoup
-from click import style, echo, secho
+from click import secho
 
 
 def get_domains_from_crtsh(domain, verbose=False):
-    payload = {'q': '%.{}'.format(domain)}
+    payload = {'q': f'%.{domain}'}
     url = 'https://crt.sh/'
     results = []
 
@@ -24,11 +23,12 @@ def get_domains_from_crtsh(domain, verbose=False):
                     hostname = cols[4].get_text()
                     if hostname[0] == '*':
                         if verbose:
-                            click.echo(click.style('[-]', fg='yellow') + " Ignoring: {}".format(hostname))
-                    else:
-                        if hostname not in results:
-                            results.append(hostname)
+                            click.echo(click.style('[-]', fg='yellow') + f" Ignoring: {hostname}")
+                    elif hostname not in results:
+                        results.append(hostname)
         except IndexError as e:
-            secho("[!] crtsh returned an error: {} causing exception {}".format(response.text, e), bg='red')
-            pass
+            secho(
+                f"[!] crtsh returned an error: {response.text} causing exception {e}",
+                bg='red',
+            )
     return results

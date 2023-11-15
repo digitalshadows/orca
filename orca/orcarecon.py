@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 
-import click
-import shodan
 import os
 import sys
 
-from modules.orca_helpers import setup_pyasn, check_pyasn_ready
-from modules.orca_dbconn import OrcaDbConnector
+import click
+import shodan
 
 # CONSTANTS
 import settings
+from modules.orca_dbconn import OrcaDbConnector
+from modules.orca_helpers import setup_pyasn, check_pyasn_ready
+
 settings.ORCA_PROJECTS = OrcaDbConnector().list_projects()
 
 # CLI Subcommands
@@ -43,8 +44,10 @@ def init(key):
     if not os.path.isdir(orca_dir):
         try:
             os.mkdir(orca_dir)
-        except OSError:
-            raise click.ClickException('Unable to create directory to store the Shodan API key ({})'.format(orca_dir))
+        except OSError as e:
+            raise click.ClickException(
+                f'Unable to create directory to store the Shodan API key ({orca_dir})'
+            ) from e
 
     # Make sure it's a valid API key
     key = key.strip()
@@ -53,13 +56,18 @@ def init(key):
         api.info()
     except shodan.APIError as e:
         click.echo(click.style('Error, invalid API key', bg='red'))
-        raise click.ClickException(e.value)
+        raise click.ClickException(e.value) from e
 
     # Store the API key in the user's directory
-    keyfile = orca_dir + '/shodan_api_key'
+    keyfile = f'{orca_dir}/shodan_api_key'
     with open(keyfile, 'w') as fout:
         fout.write(key.strip())
-        click.echo(click.style('API Successfully initialized. Profile stored in: {}'.format(orca_dir), fg='green'))
+        click.echo(
+            click.style(
+                f'API Successfully initialized. Profile stored in: {orca_dir}',
+                fg='green',
+            )
+        )
 
     os.chmod(keyfile, 0o600)
 
@@ -74,4 +82,3 @@ def check_ready():
 
 if __name__ == '__main__':
     cli()
-
