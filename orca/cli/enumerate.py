@@ -1,18 +1,15 @@
-
-import click
-import requests
 import socket
 import time
 
-from tqdm import tqdm
-
+import click
+import requests
 from modules import orca_helpers, orca_shodan, orca_dns
-from modules.orca_dbconn import OrcaDbConnector
-from modules.orca_crtsh import get_domains_from_crtsh
-from modules.orca_bgp import enumerate_bgp_domain
 from modules.orca_amass_subprocess import get_subdomains_from_amass_subprocess
-
+from modules.orca_bgp import enumerate_bgp_domain
+from modules.orca_crtsh import get_domains_from_crtsh
+from modules.orca_dbconn import OrcaDbConnector
 from settings import ORCA_PROJECTS, ORCA_CVESEARCH_IP, ORCA_CVESEARCH_PORT
+from tqdm import tqdm
 
 from . import CONTEXT_SETTINGS
 
@@ -26,7 +23,6 @@ def enum():
 @click.pass_context
 @click.argument('project', type=click.Choice(ORCA_PROJECTS))
 def enum_all(ctx, project):
-
     click.secho("\n[1/5] Running Crt.sh Subdomain Enumeration", fg='green')
     ctx.invoke(enum_subdomains_crtsh, project=project)
 
@@ -51,7 +47,8 @@ def enum_all(ctx, project):
 @enum.command('dns_db', short_help='Enumerate DNS records from the hosts in the db.')
 @click.option('--all', '-a', 'all_', help='Enumerate both asset data and hosts table', is_flag=True)
 @click.option('--dmarc', '-d', 'dmarc_', help='Enumerate all domains in asset data for DMARC entries', is_flag=True)
-@click.option('--no-multiple-resolvers', '-n', 'no_', help='Disables the usage of multiple resolvers and uses the system resolver instead', is_flag=True)
+@click.option('--no-multiple-resolvers', '-n', 'no_',
+              help='Disables the usage of multiple resolvers and uses the system resolver instead', is_flag=True)
 @click.argument('project', type=click.Choice(ORCA_PROJECTS))
 def enum_dns_db(project, all_, no_, dmarc_):
     orca_dbconn = OrcaDbConnector(project)
@@ -78,14 +75,17 @@ def enum_exploits_db(project):
     with tqdm(total=len(results)) as pbar:
         for result in results:
             if 'CVE' in result['cve']:
-                res = requests.get("http://{}:{}/api/cve/{}".format(ORCA_CVESEARCH_IP, ORCA_CVESEARCH_PORT, result['cve']))
+                res = requests.get(
+                    f"http://{ORCA_CVESEARCH_IP}:{ORCA_CVESEARCH_PORT}/api/cve/{result['cve']}"
+                )
                 res_json = res.json()
                 if 'references' in res_json:
                     for ref in res_json['references']:
                         if 'exploit-db' in ref:
-                            tqdm.write("[+] Adding exploit: {} for {} to the database".format(ref, result['cve']))
+                            tqdm.write(f"[+] Adding exploit: {ref} for {result['cve']} to the database")
                             orca_dbconn.update_vuln_table_exploit(result['host_id'], result['cve'], ref)
             pbar.update(1)
+
 
 @enum.command('cidrs_bgpview', short_help='Get CIDR prefixes from BGPView project')
 @click.option('--domain', '-d', callback=orca_helpers.validate_domain, help='Domain for scanning')
@@ -95,13 +95,14 @@ def enum_exploits_db(project, domain):
 
     enumerate_bgp_domain(orca_dbconn, domain)
 
+
 @enum.command('subdomains_crtsh',
               help='Get subdomains from crt.sh. ' +
                    'Will run over all assets in the asset table unless --domain is specified.')
 @click.option('--domain', '-d', callback=orca_helpers.validate_domain, help='Domain for scanning')
 @click.option('--verbose', '-v', 'verbose', help='Enable verbose output', is_flag=True)
 @click.argument('project', type=click.Choice(ORCA_PROJECTS))
-def enum_subdomains_crtsh(project, domain,verbose):
+def enum_subdomains_crtsh(project, domain, verbose):
     orca_dbconn = OrcaDbConnector(project)
 
     if domain:
@@ -111,32 +112,35 @@ def enum_subdomains_crtsh(project, domain,verbose):
             try:
                 ipaddr = socket.gethostbyname(line)
                 if orca_helpers.is_ipaddr(ipaddr):
-                    click.echo(click.style("[+]", fg='green') + " Adding subdomain: {} - [{}]".format(line, ipaddr))
+                    click.echo(
+                        click.style("[+]", fg='green')
+                        + f" Adding subdomain: {line} - [{ipaddr}]"
+                    )
                     orca_dbconn.add_host_to_host_table(ipaddr, [line], asset_id, 'crtsh')
             except Exception as e:
                 if verbose:
-                    click.secho("[!] Error {}".format(e), fg='red')
-                pass
+                    click.secho(f"[!] Error {e}", fg='red')
     else:
         results = orca_dbconn.get_all_ad_entries_domains()
         for result in results:
             asset_id = result['asset_id']
             domain = result['asset_data_value']
 
-            output = get_domains_from_crtsh(domain,verbose=verbose)
+            output = get_domains_from_crtsh(domain, verbose=verbose)
 
             for line in output:
                 try:
                     ipaddr = socket.gethostbyname(line)
                     if orca_helpers.is_ipaddr(ipaddr):
-                        click.echo(click.style("[+]", fg='green') + " Adding subdomain: {} - [{}]".format(line, ipaddr))
+                        click.echo(
+                            click.style("[+]", fg='green')
+                            + f" Adding subdomain: {line} - [{ipaddr}]"
+                        )
 
                         orca_dbconn.add_host_to_host_table(ipaddr, [line], asset_id, 'crtsh')
                 except Exception as e:
                     if verbose:
-                        click.echo(click.style("[-]", fg='red') + " Skipping: {}".format(e))
-                    pass
-
+                        click.echo(click.style("[-]", fg='red') + f" Skipping: {e}")
             click.echo(
                 click.style('\n[!]', fg='yellow') + " Sleeping for 10s")
             time.sleep(10)
@@ -160,16 +164,23 @@ def enum_subdomains_dumpster(project, domain):
     else:
         results = orca_dbconn.get_all_ad_entries_domains()
         for result in results:
-                click.echo(click.style('\n[?]', fg='yellow') + " Searching for subdomains for: {}".format(result['asset_data_value']))
-                asset_id = result['asset_id']
-                domain = result['asset_data_value']
+            click.echo(
+                (
+                        click.style('\n[?]', fg='yellow')
+                        + f" Searching for subdomains for: {result['asset_data_value']}"
+                )
+            )
+            asset_id = result['asset_id']
+            domain = result['asset_data_value']
 
-                output = orca_dns.get_domains_from_dnsdumpster(domain)
+            output = orca_dns.get_domains_from_dnsdumpster(domain)
 
-                for line in output:
-
-                    click.echo(click.style("[+]", fg='green') + " Adding subdomain: {} - [{}]".format(line[0], line[1]))
-                    orca_dbconn.add_host_to_host_table(line[1], [line[0]], asset_id, 'dnsdumpster')
+            for line in output:
+                click.echo(
+                    click.style("[+]", fg='green')
+                    + f" Adding subdomain: {line[0]} - [{line[1]}]"
+                )
+                orca_dbconn.add_host_to_host_table(line[1], [line[0]], asset_id, 'dnsdumpster')
 
         if len(results) > 1:
             time.sleep(10)
@@ -185,43 +196,52 @@ def enum_subdomains_amass(project, domain, verbose):
     orca_dbconn = OrcaDbConnector(project)
 
     click.secho("\n[!] Running Amass enumeration", fg='green')
-    
+
     if domain:
         output = get_subdomains_from_amass_subprocess(domain)
         asset_id = orca_dbconn.store_asset(domain, asset_type='domain', source='amass')
         for line in output['subdomains']['results']:
-            for ipaddr in line[1]: # Get unique
+            for ipaddr in line[1]:  # Get unique
 
                 try:
                     orca_helpers.validate_ip(None, None, ipaddr)
                 except ValueError as e:
                     if verbose:
-                        click.secho("[?] {}: {} - [{}]".format(e, line[0], ipaddr), fg='yellow')
-                    pass
+                        click.secho(f"[?] {e}: {line[0]} - [{ipaddr}]", fg='yellow')
                 else:
-                    click.echo(click.style("[+]", fg='green') + " Adding subdomain: {} - [{}]".format(line[0], ipaddr))
+                    click.echo(
+                        click.style("[+]", fg='green')
+                        + f" Adding subdomain: {line[0]} - [{ipaddr}]"
+                    )
                     orca_dbconn.add_host_to_host_table(ipaddr, [line[0]], asset_id, 'amass')
 
     else:
         results = orca_dbconn.get_all_ad_entries_domains()
         for result in results:
-            click.echo(click.style('\n[?]', fg='yellow') + " Searching for subdomains for: {}".format(result['asset_data_value']))
+            click.echo(
+                (
+                        click.style('\n[?]', fg='yellow')
+                        + f" Searching for subdomains for: {result['asset_data_value']}"
+                )
+            )
             domain = result['asset_data_value']
 
             output = get_subdomains_from_amass_subprocess(domain)
             asset_id = orca_dbconn.store_asset(domain, asset_type='domain', source='amass')
             for line in output['subdomains']['results']:
                 print(line)
-                for ipaddr in line[1]: # Get unique
+                for ipaddr in line[1]:  # Get unique
                     try:
                         print(ipaddr)
                         orca_helpers.validate_ip(None, None, ipaddr)
                     except ValueError as e:
                         if verbose:
-                            click.secho("[?] {}: {} - [{}]".format(e, line[0], ipaddr), fg='yellow')
-                        pass
+                            click.secho(f"[?] {e}: {line[0]} - [{ipaddr}]", fg='yellow')
                     else:
-                        click.echo(click.style("[+]", fg='green') + " Adding subdomain: {} - [{}]".format(line[0], ipaddr))
+                        click.echo(
+                            click.style("[+]", fg='green')
+                            + f" Adding subdomain: {line[0]} - [{ipaddr}]"
+                        )
                         orca_dbconn.add_host_to_host_table(ipaddr, [line[0]], asset_id, 'amass')
 
 
@@ -241,7 +261,10 @@ def lookup_hosts_shodan(project, enum, refresh_results):
         host_table = orca_dbconn.get_all_host_table_entries()
 
         if len(host_table) > 0:
-            click.secho("\n[!] Running host enumeration over {} hostnames".format(len(host_table)), fg='green')
+            click.secho(
+                f"\n[!] Running host enumeration over {len(host_table)} hostnames",
+                fg='green',
+            )
         else:
             click.secho("\n[>] No hosts ranges to enumerate - skipping!", fg='yellow')
 
@@ -260,12 +283,18 @@ def lookup_hosts_shodan(project, enum, refresh_results):
         results = orca_dbconn.get_all_ad_entries_typed('cidr')
 
         if len(results) > 0:
-            click.secho("\n[!] Running CIDR enumeration over {} ranges".format(len(results)), fg='green')
+            click.secho(
+                f"\n[!] Running CIDR enumeration over {len(results)} ranges",
+                fg='green',
+            )
         else:
             click.secho("\n[>] No CIDR ranges to enumerate - skipping!", fg='yellow')
 
         for result in results:
-            click.echo(click.style("[?]", fg='yellow') + " Enumerating CIDR {}".format(result['asset_data_value']))
+            click.echo(
+                click.style("[?]", fg='yellow')
+                + f" Enumerating CIDR {result['asset_data_value']}"
+            )
             orca_shodan.shodan_lookup_netrange(project, result['asset_data_value'], result['asset_id'],
                                                refresh=refresh_results)
 
@@ -274,7 +303,10 @@ def lookup_hosts_shodan(project, enum, refresh_results):
         results = orca_dbconn.get_all_ad_entries_typed('ipaddr')
 
         if len(results) > 0:
-            click.secho("\n[!] Running IP enumeration over {} addresses".format(len(results)), fg='green')
+            click.secho(
+                f"\n[!] Running IP enumeration over {len(results)} addresses",
+                fg='green',
+            )
         else:
             click.secho("\n[>] No IP addresses to enumerate - skipping!", fg='yellow')
 

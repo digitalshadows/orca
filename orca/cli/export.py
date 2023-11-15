@@ -1,5 +1,4 @@
 import click
-
 from modules import orca_reporting
 from modules.orca_dbconn import OrcaDbConnector
 from modules.orca_helpers import validate_filename

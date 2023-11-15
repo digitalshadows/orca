@@ -1,19 +1,18 @@
+import glob
 import json
 import os
-import click
-import subprocess
-import glob
-import sys
-import pathvalidate
 import re
-import validators
-
-from stat import ST_MODE
+import subprocess
+import sys
 from pathlib import PurePosixPath
+from stat import ST_MODE
+
+import click
+import pathvalidate
+import validators
 from netaddr import IPAddress, IPNetwork
 from netaddr.core import AddrFormatError
 from pygments import highlight, lexers, formatters
-
 # CONSTANTS
 from settings import ORCA_CONFIG_DIR
 
@@ -24,61 +23,62 @@ def list_to_string(input_list):
     elif len(input_list) == 1:
         return str(input_list[0])
     elif len(input_list) > 1:
-        return str(','.join([str(x) for x in input_list]))
+        return ','.join([str(x) for x in input_list])
 
 
 def cpe_to_string(input_cpe):
     cpe_list = []
     if not input_cpe:
         return 'N/A'
-    else:
-        for result in input_cpe['cpe']:
-            for k,v in result.items():
-                if len(v) == 1:
-                    cpe_list.append("{}:{}".format(k,v[0]))
-                elif len(v) > 1:
-                    cpe_list.append("{}:{}".format(k,','.join(v)))
+    for result in input_cpe['cpe']:
+        for k, v in result.items():
+            if len(v) == 1:
+                cpe_list.append(f"{k}:{v[0]}")
+            elif len(v) > 1:
+                cpe_list.append(f"{k}:{','.join(v)}")
 
     return ','.join(cpe_list)
 
 
 def handle_json_output(json_input, raw):
     if raw:
-        raw_json=json.dumps(json_input)
+        raw_json = json.dumps(json_input)
         print(raw_json)
-    else:                        
+    else:
         formatted_json = json.dumps(json_input, sort_keys=True, indent=4)
         colorful_json = highlight(formatted_json, lexers.JsonLexer(), formatters.TerminalFormatter())
         print(colorful_json)
+
 
 def ip_check_routable(item):
     ip_addr = IPAddress(item)
 
     # This prevents netaddr allowing shortened ip addresses
-    if not str(ip_addr) == item:
-        raise AddrFormatError("IP Malformed {}".format(item))
+    if str(ip_addr) != item:
+        raise AddrFormatError(f"IP Malformed {item}")
 
     # Check for reserved IP addresses
-    if any([ip_addr.is_multicast(), ip_addr.is_private(), ip_addr.is_loopback(), ip_addr.is_link_local(), ip_addr.is_reserved()]):
-        raise AddrFormatError("IP is reserved {}".format(item))
+    if any([ip_addr.is_multicast(), ip_addr.is_private(), ip_addr.is_loopback(), ip_addr.is_link_local(),
+            ip_addr.is_reserved()]):
+        raise AddrFormatError(f"IP is reserved {item}")
     # Check to see if IP is IPv4
     # elif ip_addr.version is not 4:
     #     raise AddrFormatError("IP is not IPv4")
 
     return True
 
+
 def is_ipaddr(ip):
     tmp_ip = None
     try:
-        tmp_ip = IPAddress(ip)
-        if tmp_ip:
+        if tmp_ip := IPAddress(ip):
             if tmp_ip.is_unicast():
                 ip_check_routable(ip)
                 return True
             else:
                 return False
 
-    except:
+    except Exception:
         return False
 
     else:
@@ -90,7 +90,7 @@ def is_cidr(cidr):
         IPNetwork(cidr)
         return True
     except Exception as e:
-        #click.echo("{} is not a valid IP Network range: {}".format(cidr, e))
+        # click.echo("{} is not a valid IP Network range: {}".format(cidr, e))
         return False
 
 
@@ -114,15 +114,14 @@ def print_table(rows):
     # print columns with the maximum width
     for columns in rows:
         cols = [str(c).ljust(w) for w, c in zip(wcolumns, columns)]
-        click.echo("| {} |".format(" | ".join(list(cols))))
+        click.echo(f'| {" | ".join(list(cols))} |')
 
 
 def get_shodan_key():
-
     '''Returns the API key of the current logged-in user.'''
 
     shodan_dir = os.path.expanduser(ORCA_CONFIG_DIR)
-    keyfile = shodan_dir + '/shodan_api_key'
+    keyfile = f'{shodan_dir}/shodan_api_key'
 
     # If the file doesn't yet exist let the user know that they need to
     # initialize the shodan cli
@@ -131,75 +130,77 @@ def get_shodan_key():
         sys.exit(1)
 
     perms = oct(os.stat(keyfile)[ST_MODE])[-3:]
-    if perms != '600':
-        if click.confirm('WARNING: permissions set incorrectly, do you want to reset?'):
-            os.chmod(keyfile, 0o600)
+    if perms != '600' and click.confirm('WARNING: permissions set incorrectly, do you want to reset?'):
+        os.chmod(keyfile, 0o600)
 
     with open(keyfile, 'r') as fin:
         api_key = fin.read().strip()
-        if len(api_key) != 32:
-            click.secho("[!] Invalid SHODAN API key")
-            sys.exit(1)
-        else:
+        if len(api_key) == 32:
             return api_key
-        
-def setup_pyasn():
+        click.secho("[!] Invalid SHODAN API key")
+        sys.exit(1)
 
+
+def setup_pyasn():
     # Create directory if required
 
     orca_dir = os.path.expanduser(ORCA_CONFIG_DIR)
     if not os.path.isdir(orca_dir):
         try:
             os.mkdir(orca_dir)
-        except OSError:
-            raise click.ClickException('Unable to create directory to store the PyASN DB: {}'.format(orca_dir))
+        except OSError as e:
+            raise click.ClickException(
+                f'Unable to create directory to store the PyASN DB: {orca_dir}'
+            ) from e
 
     # Install PyASN
     if click.confirm("The Orca requires pyasn to be downloaded. Would you like to do that now?", default=True):
 
-        # Clean up old files
-        if os.path.exists(orca_dir + 'ipasn_db.dat'):
-            os.remove(orca_dir + 'ipasn_db.dat')
-
-        files = glob.glob(orca_dir + "rib.*")
-        for file in files:
-            print("Removing {}!".format(file))
-            os.remove(file)
-
-        # Download Data
-
-        subprocess.call(["pyasn_util_download.py", "--latest"], cwd=orca_dir)
-        click.echo(click.style('DB Downloaded', fg='green'))
-
-        # Convert data
-
-        files = glob.glob(orca_dir + "rib.*")
-
-        subprocess.call(["pyasn_util_convert.py", "--single", files[0], "ipasn_db.dat"], cwd=orca_dir)
-        click.echo(click.style('File formatted!', fg='green'))
-
-        # Clean up
-        files = glob.glob(orca_dir + "rib.*")
-        for file in files:
-            print("Removing {}!\n".format(file))
-            os.remove(file)
+        update_and_format_pyasn_data(orca_dir)
     else:
         print("Exiting!")
         sys.exit()
 
 
+# TODO Rename this here and in `setup_pyasn`
+def update_and_format_pyasn_data(orca_dir):
+    # Clean up old files
+    if os.path.exists(f'{orca_dir}ipasn_db.dat'):
+        os.remove(f'{orca_dir}ipasn_db.dat')
+
+    files = glob.glob(f"{orca_dir}rib.*")
+    for file in files:
+        print(f"Removing {file}!")
+        os.remove(file)
+
+    # Download Data
+
+    subprocess.call(["pyasn_util_download.py", "--latest"], cwd=orca_dir)
+    click.echo(click.style('DB Downloaded', fg='green'))
+
+    # Convert data
+
+    files = glob.glob(f"{orca_dir}rib.*")
+
+    subprocess.call(["pyasn_util_convert.py", "--single", files[0], "ipasn_db.dat"], cwd=orca_dir)
+    click.echo(click.style('File formatted!', fg='green'))
+
+    # Clean up
+    files = glob.glob(f"{orca_dir}rib.*")
+    for file in files:
+        print(f"Removing {file}!\n")
+        os.remove(file)
+
+
 def check_pyasn_ready():
     orca_dir = os.path.expanduser(ORCA_CONFIG_DIR)
-    if os.path.exists(orca_dir + 'ipasn_db.dat'):
-        return True
-    else:
-        return False
+    return bool(os.path.exists(f'{orca_dir}ipasn_db.dat'))
+
 
 # Callbacks for Click validation
 
 
 def validate_filename(ctx, param, value):
-
     p = PurePosixPath(value)
 
     file_name = str(p.name)
@@ -209,50 +210,48 @@ def validate_filename(ctx, param, value):
         pathvalidate.validate_filepath(file_path, platform='Linux')
         pathvalidate.validate_filename(file_name, platform='Linux')
     except pathvalidate.ValidationError as e:
-        click.secho("[!] Invalid filename provided: {}".format(value), bg='red')
+        click.secho(f"[!] Invalid filename provided: {value}", bg='red')
         ctx.abort()
     return value
 
 
 def validate_ip(ctx, param, value):
-
     if value:
         if is_ipaddr(value):
             return value
+        if ctx:
+            click.secho(f"[!] Invalid IP address provided: {value}", bg='red')
+            ctx.abort()
         else:
-            if ctx:
-                click.secho("[!] Invalid IP address provided: {}".format(value), bg='red')
-                ctx.abort()
-            else:
-                raise ValueError('Invalid IP address provided: {}'.format(value))
+            raise ValueError(f'Invalid IP address provided: {value}')
 
     return value
 
+
 def validate_ipv4(ctx, param, value):
-
-    if value:
-        if not (validators.ipv4(value) and is_ipaddr(value)):
-
-            if ctx:
-                click.secho("[!] Invalid IPv4 provided: {}".format(value), bg='red')
-                ctx.abort()
-            else:
-                raise ValueError('Invalid IPv4 provided')
+    if value and not (validators.ipv4(value) and is_ipaddr(value)):
+        if ctx:
+            click.secho(f"[!] Invalid IPv4 provided: {value}", bg='red')
+            ctx.abort()
+        else:
+            raise ValueError('Invalid IPv4 provided')
 
     return value
 
 
 def validate_cidr(ctx, param, value):
-
     if value:
         try:
             IPNetwork(value)
 
             if str(IPNetwork(value)) != value:
-                click.secho("[!] Invalid CIDR provided: {} - did you mean {}?".format(value, str(IPNetwork(value))), bg='red')
+                click.secho(
+                    f"[!] Invalid CIDR provided: {value} - did you mean {str(IPNetwork(value))}?",
+                    bg='red',
+                )
                 ctx.abort()
         except (AddrFormatError, ValueError):
-            click.secho("[!] Invalid CIDR provided: {}".format(value), bg='red')
+            click.secho(f"[!] Invalid CIDR provided: {value}", bg='red')
             ctx.abort()
     return value
 
@@ -263,7 +262,7 @@ def validate_domain(ctx, param, value):
     if value and (not bool(r.match(value))):
 
         if ctx:
-            click.secho("[!] Invalid domain name provided: {}".format(value), bg='red')
+            click.secho(f"[!] Invalid domain name provided: {value}", bg='red')
             ctx.abort()
         else:
             raise ValueError('Invalid domain provided')
@@ -275,7 +274,7 @@ def validate_orgname(ctx, param, value):
     r = re.compile("^[a-zA-Z0-9 \-!]*$")
 
     if value and (not bool(r.match(value))):
-        click.secho("[!] Invalid organisation name provided: {}".format(value), bg='red')
+        click.secho(f"[!] Invalid organisation name provided: {value}", bg='red')
         ctx.abort()
 
     return value
@@ -285,7 +284,10 @@ def validate_projectname(ctx, param, value):
     r = re.compile("^[a-zA-Z0-9]*$")
 
     if value and (not bool(r.match(value))):
-        click.secho("[!] Invalid project name provided - special characters are not allowed: {}".format(value), bg='red')
+        click.secho(
+            f"[!] Invalid project name provided - special characters are not allowed: {value}",
+            bg='red',
+        )
         ctx.abort()
 
     return value

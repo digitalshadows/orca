@@ -1,13 +1,12 @@
-import click
 import csv
-import textwrap
 import io
+import textwrap
 
-from terminaltables import AsciiTable
-
+import click
 from modules import orca_helpers, orca_tagging
 from modules.orca_dbconn import OrcaDbConnector
 from settings import ORCA_PROJECTS
+from terminaltables import AsciiTable
 
 from . import CONTEXT_SETTINGS
 
@@ -20,10 +19,11 @@ def explore():
 @explore.command('delete_project', short_help='Delete an Orca project from the database')
 @click.argument('project', type=click.Choice(ORCA_PROJECTS))
 def delete_project_db(project):
-
-    if click.confirm(click.style("[?]", fg='yellow') + " Are you sure you want to delete the {} project?".format(project)):
-
-        click.secho("[!] Deleting all entries for {}".format(project), bg='red')
+    if click.confirm(
+            click.style("[?]", fg='yellow')
+            + f" Are you sure you want to delete the {project} project?"
+    ):
+        click.secho(f"[!] Deleting all entries for {project}", bg='red')
         orca_dbconn = OrcaDbConnector(project)
         orca_dbconn.delete_all_entries(project)
 
@@ -36,22 +36,26 @@ def show_assets_db(project):
     results = orca_dbconn.get_all_ad_entries()
 
     table_data = [["Asset ID", "Value", "Type", "Origin", "Infrastructure Check", "Verified", "Insert Time"]]
-    for result in results:
-        table_data.append([str(result['asset_id']),
-                           result['asset_data_value'],
-                           result['asset_data_type'],
-                           result['asset_data_origin'],
-                           str(result['infra_check']),
-                           str(result['verified']),
-                           str(result['insert_time'])])
-
+    table_data.extend(
+        [
+            str(result['asset_id']),
+            result['asset_data_value'],
+            result['asset_data_type'],
+            result['asset_data_origin'],
+            str(result['infra_check']),
+            str(result['verified']),
+            str(result['insert_time']),
+        ]
+        for result in results
+    )
     table = AsciiTable(table_data)
     click.echo(table.table)
 
 
 @explore.command('show_hosts', short_help='Show hosts in the host table in the DB')
 @click.option('--output', '-o', 'output', help='Select how you would like the data to be displayed.'
-                                             'Some information, such as banners, may be missing.', type=click.Choice(['table','csv']),  default='table', show_default='table')
+                                               'Some information, such as banners, may be missing.',
+              type=click.Choice(['table', 'csv']), default='table', show_default='table')
 @click.argument('project', type=click.Choice(ORCA_PROJECTS))
 def show_hosts_db(project, output):
     orca_dbconn = OrcaDbConnector(project)
@@ -60,9 +64,20 @@ def show_hosts_db(project, output):
 
     table_data = [["Host ID", "IP Address", "Hostname", "Shodan Hostname", "Asset ID", "In Shodan", "Host Data Origin"]]
 
-    for result in results:
-        table_data.append([str(result['host_id']), result['ipaddr'], orca_helpers.list_to_string(result['hostname']), orca_helpers.list_to_string(result['shodan_hostname']).replace(",", "\n"), str(result['asset_id']), str(result['shodan']), str(result['host_data_origin'])])
-
+    table_data.extend(
+        [
+            str(result['host_id']),
+            result['ipaddr'],
+            orca_helpers.list_to_string(result['hostname']),
+            orca_helpers.list_to_string(result['shodan_hostname']).replace(
+                ",", "\n"
+            ),
+            str(result['asset_id']),
+            str(result['shodan']),
+            str(result['host_data_origin']),
+        ]
+        for result in results
+    )
     if output == 'csv':
         table_data = [[x.replace('\n', ',') for x in line] for line in table_data]  # remove newlines from rest of table
 
@@ -81,7 +96,8 @@ def show_hosts_db(project, output):
 
 @explore.command('show_shodan', short_help='Show SHODAN results in the DB')
 @click.option('--output', '-o', 'output', help='Select how you would like the data to be displayed.'
-                                             'Some information, such as banners, may be missing.', type=click.Choice(['table','csv']))
+                                               'Some information, such as banners, may be missing.',
+              type=click.Choice(['table', 'csv']))
 @click.argument('project', type=click.Choice(ORCA_PROJECTS))
 def show_shodan_db(project, output):
     orca_dbconn = OrcaDbConnector(project)
@@ -114,7 +130,8 @@ def show_shodan_db(project, output):
         if table.ok:
             click.echo(table.table)
         else:
-            if click.confirm("[?] Your terminal is too small to display the table, the output might be a bit malformed. Would you like to continue?"):
+            if click.confirm(
+                    "[?] Your terminal is too small to display the table, the output might be a bit malformed. Would you like to continue?"):
                 click.echo(table.table)
 
     elif output == 'csv':
@@ -127,7 +144,7 @@ def show_shodan_db(project, output):
         wr.writerows(data)
         click.echo(output.getvalue())
 
-    else: # By default, print the host and service information separately.
+    else:  # By default, print the host and service information separately.
         results = orca_dbconn.get_all_shodan_entries()
 
         for result in results:
@@ -188,14 +205,15 @@ def show_shodan_db(project, output):
 
 @explore.command('list_projects', short_help='List the Orca projects in the database.')
 def list_projects_db():
-
     click.echo(click.style("[?]", fg='yellow') + " Current Orca projects in the database:\n")
     orca_dbconn = OrcaDbConnector()
 
     table_data = [["Project", "Assets", "Hosts", "DNS Entries", "Shodan", "Vulnerabilities"]]
     for project in orca_dbconn.list_projects():
         summary = orca_dbconn.get_summary_counts(project)
-        table_data.append([project, summary['asset_count'], summary['host_count'], summary['dns_count'], summary['shodan_count'], summary['vuln_count']])
+        table_data.append(
+            [project, summary['asset_count'], summary['host_count'], summary['dns_count'], summary['shodan_count'],
+             summary['vuln_count']])
 
     table = AsciiTable(table_data)
     table.title = 'Current Projects'

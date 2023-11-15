@@ -1,9 +1,9 @@
-from googlesearch import search
 from urllib.parse import urlparse
 
+from googlesearch import search
 
-def search_org_name(search_input, results_number = 20):
 
+def search_org_name(search_input, results_number=20):
     urls = []
 
     for url in search(search_input, stop=results_number):
@@ -19,4 +19,3 @@ def search_org_name(search_input, results_number = 20):
         if domain not in uniq_domain_list:
             uniq_domain_list.append(domain)
             yield domain
-

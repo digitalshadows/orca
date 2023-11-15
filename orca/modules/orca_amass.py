@@ -1,7 +1,5 @@
-import click
 import json
 
-from click import style, echo, secho
 
 def get_subdomains_from_amass(amass_file):
     results = []
@@ -11,9 +9,6 @@ def get_subdomains_from_amass(amass_file):
         if not domain:
             domain = json_line['domain']
         if json_line['name']:
-            ip_addrs = []
-            for address in json_line['addresses']:
-                ip_addrs.append(address['ip'])
-            results.append([json_line['name'],list(set(ip_addrs))])
-    json_data = {'subdomains':{'results':results, 'domain': domain}}
-    return json_data
+            ip_addrs = [address['ip'] for address in json_line['addresses']]
+            results.append([json_line['name'], list(set(ip_addrs))])
+    return {'subdomains': {'results': results, 'domain': domain}}
